@@ -1,0 +1,91 @@
+
+.dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e0e7ff 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.main-toolbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+
+  .logo-icon {
+    margin-right: 10px;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .toolbar-title {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  button {
+    color: white;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.dashboard-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 0;
+}
+
+.main-content {
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 32px;
+  background: transparent;
+  overflow: visible;
+}
+
+// Card styles for dashboard
+mat-card {
+  border-radius: 18px !important;
+  box-shadow: 0 2px 16px rgba(102,126,234,0.10);
+  background: linear-gradient(135deg, #f8f9ff 0%, #e0e7ff 100%) !important;
+  margin-bottom: 0 !important;
+  transition: box-shadow 0.3s;
+}
+mat-card-header {
+  padding-bottom: 0 !important;
+}
+mat-card-title {
+  font-size: 1.3rem !important;
+  font-weight: 700;
+  color: #764ba2 !important;
+}
+mat-card-content {
+  color: #333;
+}
+
+mat-card:hover {
+  box-shadow: 0 4px 24px rgba(102,126,234,0.18);
+}
+
+@media (max-width: 900px) {
+  .dashboard-content {
+    padding: 24px 0;
+  }
+  .main-content {
+    padding: 0 8px;
+  }
+  mat-card {
+    min-width: 260px !important;
+    max-width: 100% !important;
+  }
+}
