@@ -1,0 +1,66 @@
+.main-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 0 20px; /* Adjust padding as needed */
+
+  .logo-icon {
+    margin-right: 10px;
+  }
+
+  .toolbar-title {
+    font-size: 1.25rem; /* Adjust as needed */
+    font-weight: 500;
+  }
+
+  .nav-list-horizontal {
+    display: flex;
+    gap: 10px; /* Space between navigation buttons */
+  }
+
+  .spacer {
+    flex: 1 1 auto; /* Pushes content to the right */
+  }
+
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .auth-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobile-menu-button {
+    display: none; /* Hidden by default on larger screens */
+  }
+
+  /* Media query for mobile view */
+  @media (max-width: 768px) {
+    .nav-list-horizontal {
+      display: none; /* Hide horizontal navigation */
+    }
+
+    .mobile-menu-button {
+      display: block; /* Show hamburger menu */
+    }
+
+    .user-chip span,
+    .auth-action span {
+      display: none;
+    }
+
+    .user-chip {
+      margin-right: 8px;
+      padding: 6px 8px;
+    }
+  }
+}

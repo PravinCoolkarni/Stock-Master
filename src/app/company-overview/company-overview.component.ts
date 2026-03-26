@@ -1,9 +1,9 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { catchError, debounceTime, distinctUntilChanged, map, Observable, of, startWith, switchMap } from 'rxjs';
-import { Company } from 'src/model/Company';
-import { StockData } from 'src/model/StockData';
-import { CompanyOverview } from 'src/model/CompanyOverview';
+import { Company } from 'src/interfaces/Company';
+import { StockData } from 'src/interfaces/StockData';
+import { CompanyOverview } from 'src/interfaces/CompanyOverview';
 import { DataExtractorService } from 'src/services/dataExtractor.service';
 
 @Component({
@@ -34,6 +34,8 @@ export class CompanyOverviewComponent implements OnInit {
           return this.dataExtractorService.getCompany(value).pipe(
             map(response => {
               this.options = this.convertToCompanyArray(response);
+              this.options = this.options.filter(option => option.region.toLowerCase().includes("india"));
+              console.log('Filtered options:', this.options);
               return this.options;
             }),
             catchError(() => {

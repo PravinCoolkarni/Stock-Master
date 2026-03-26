@@ -1,0 +1,150 @@
+<div class="auth-page" @fadeSlideIn>
+  <div class="container-fluid auth-shell">
+    <div class="row justify-content-center align-items-center min-vh-100 g-4">
+      <div class="col-12 col-xl-10">
+        <div class="row g-4 align-items-stretch">
+          <div class="col-lg-5 d-none d-lg-block">
+            <section class="auth-side-panel anim-item h-100">
+              <div class="brand-badge">
+                <mat-icon>trending_up</mat-icon>
+                <span>Stock Master</span>
+              </div>
+
+              <div class="hero-copy">
+                <p class="eyebrow">Create your workspace</p>
+                <h1>Build a smarter investing workflow from day one.</h1>
+                <p class="hero-text">
+                  Register once and use the same workspace for market research, company lookups, and dashboard review.
+                </p>
+              </div>
+
+              <div class="feature-list">
+                <div class="feature-card">
+                  <mat-icon>account_tree</mat-icon>
+                  <div>
+                    <h3>Connected views</h3>
+                    <p>Move from login to dashboard, research, and company detail flows without friction.</p>
+                  </div>
+                </div>
+                <div class="feature-card">
+                  <mat-icon>verified_user</mat-icon>
+                  <div>
+                    <h3>Protected access</h3>
+                    <p>Use email credentials or Google sign-in with the same authentication backend.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="col-12 col-lg-7 col-xl-6">
+            <mat-card class="auth-card anim-item">
+              <mat-card-content>
+                <div class="auth-header">
+                  <div class="mobile-brand d-lg-none">
+                    <mat-icon>trending_up</mat-icon>
+                    <span>Stock Master</span>
+                  </div>
+                  <p class="section-label">Register</p>
+                  <h2>Create your account</h2>
+                  <p class="section-copy">Start with email access now, then continue into the analysis workspace.</p>
+                </div>
+
+                <div class="error-banner" *ngIf="errorMsg">
+                  <mat-icon>error_outline</mat-icon>
+                  <span>{{ errorMsg }}</span>
+                </div>
+
+                <button class="btn btn-light google-btn w-100 anim-item" type="button" matRipple (click)="loginWithGoogle()">
+                  <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                  </svg>
+                  <span>Sign up with Google</span>
+                </button>
+
+                <div class="divider"><span>or register with email</span></div>
+
+                <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Full name</mat-label>
+                        <input matInput formControlName="full_name" placeholder="Jane Smith" autocomplete="name" />
+                        <mat-icon matSuffix>person_outline</mat-icon>
+                        <mat-error *ngIf="fullName.hasError('required')">Name is required</mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-12">
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Email address</mat-label>
+                        <input matInput formControlName="email" type="email" placeholder="you@example.com" autocomplete="email" />
+                        <mat-icon matSuffix>mail_outline</mat-icon>
+                        <mat-error *ngIf="email.hasError('required')">Email is required</mat-error>
+                        <mat-error *ngIf="email.hasError('email')">Enter a valid email</mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Password</mat-label>
+                        <input matInput formControlName="password" [type]="hidePass ? 'password' : 'text'" autocomplete="new-password" />
+                        <button mat-icon-button matSuffix type="button" (click)="hidePass = !hidePass">
+                          <mat-icon>{{ hidePass ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
+                        <mat-error *ngIf="password.hasError('minlength')">Min 6 characters</mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                      <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Confirm password</mat-label>
+                        <input matInput formControlName="confirmPassword" [type]="hideConf ? 'password' : 'text'" autocomplete="new-password" />
+                        <button mat-icon-button matSuffix type="button" (click)="hideConf = !hideConf">
+                          <mat-icon>{{ hideConf ? 'visibility_off' : 'visibility' }}</mat-icon>
+                        </button>
+                        <mat-error *ngIf="confirmPassword.hasError('required')">Please confirm password</mat-error>
+                        <mat-error *ngIf="confirmPassword.hasError('mismatch')">Passwords do not match</mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-12">
+                      <div class="strength-panel" *ngIf="password.value">
+                        <div class="strength-bars">
+                          <div class="bar" [class.active]="strength >= 1" [class]="strength >= 1 ? strengthClass : ''"></div>
+                          <div class="bar" [class.active]="strength >= 2" [class]="strength >= 2 ? strengthClass : ''"></div>
+                          <div class="bar" [class.active]="strength >= 3" [class]="strength >= 3 ? strengthClass : ''"></div>
+                          <div class="bar" [class.active]="strength >= 4" [class]="strength >= 4 ? strengthClass : ''"></div>
+                        </div>
+                        <div class="strength-copy">
+                          <span class="strength-label">Password strength</span>
+                          <span class="strength-value" [ngClass]="strengthClass">{{ strengthLabel }}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-12">
+                      <button class="submit-btn w-100" type="submit" [disabled]="loading" matRipple>
+                        <mat-spinner *ngIf="loading" diameter="20" class="btn-spinner"></mat-spinner>
+                        <span *ngIf="!loading">Create Account</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                <div class="footer-note">
+                  <span>Already have an account?</span>
+                  <a routerLink="/login">Sign in</a>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

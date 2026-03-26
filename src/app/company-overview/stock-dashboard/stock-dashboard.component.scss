@@ -211,6 +211,37 @@
   }
 }
 
+.prediction-card {
+  background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(102, 166, 255, 0.3);
+
+  mat-card-header {
+    mat-card-title {
+      color: white;
+      font-size: 24px;
+      font-weight: 600;
+    }
+  }
+
+  .prediction {
+    text-align: center;
+    padding: 20px 0;
+
+    .price {
+      display: block;
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .confidence {
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+}
+
 @media (max-width: 1024px) {
   .price-grid {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;

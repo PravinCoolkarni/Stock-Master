@@ -43,6 +43,21 @@
       </mat-card-content>
     </mat-card>
 
+    <!-- Gemini Prediction Card -->
+    <mat-card class="prediction-card" *ngIf="prediction">
+      <mat-card-header>
+        <mat-card-title>Gemini Price Prediction</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="prediction">
+          <span class="price">${{prediction.prediction}}</span>
+          <div class="confidence">
+            <span>Confidence: {{prediction.confidence * 100 | number:'1.0-0'}}%</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <!-- Detailed Stock Table -->
     <mat-card class="stock-table-card">
       <mat-card-header>

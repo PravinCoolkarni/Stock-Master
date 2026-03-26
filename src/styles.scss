@@ -9,6 +9,9 @@
 // Be sure that you only ever include this mixin once!
 @include mat.core();
 
+/* Bootstrap 5 */
+@import 'bootstrap/scss/bootstrap';
+
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
@@ -35,6 +38,10 @@ $StockMaster-theme: mat.define-light-theme((
 
 /* You can add global styles to this file, and also import other style files */
 
+
+// ── Global resets ─────────────────────────────────────────────────────────────
+*, *::before, *::after { box-sizing: border-box; }
+
 html, body { 
   height: 100%; 
   margin: 0;
@@ -44,6 +51,16 @@ html, body {
 
 * {
   box-sizing: border-box;
+}
+
+/* In your root styles or a theme file */
+:root {
+  --form-field-height: 44px;
+}
+
+/* In market-research.component.scss */
+:host ::ng-deep .url-input-row .mat-mdc-text-field-wrapper {
+  height: var(--form-field-height);
 }
 
 /* Custom scrollbar styles */
@@ -125,4 +142,11 @@ html, body {
 .mat-header-cell {
   color: white !important;
   font-weight: 600 !important;
+}
+
+
+// ── Snackbar overrides ────────────────────────────────────────────────────────
+.snack-success .mdc-snackbar__surface {
+  background: #166534 !important;
+  color: #fff !important;
 }

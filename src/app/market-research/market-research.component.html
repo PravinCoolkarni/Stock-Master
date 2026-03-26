@@ -1,0 +1,110 @@
+<div class="data-source-section">
+  <h2>Select Data Source for Analysis</h2>
+  <form [formGroup]="dataSourceForm" (ngSubmit)="onSubmit()">
+    <mat-radio-group class="source-selection" formControlName="sourceType">
+      <mat-radio-button [value]="ContentType.URL" class="source-radio-button">URL</mat-radio-button>
+      <mat-radio-button [value]="ContentType.Docs" class="source-radio-button">Docs</mat-radio-button>
+      <mat-radio-button [value]="ContentType.RawText" class="source-radio-button">Raw Text</mat-radio-button>
+    </mat-radio-group>
+
+    <div [ngSwitch]="type" class="source-content">
+      <div *ngSwitchCase="ContentType.URL">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Enter URLs for Analysis</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div formArrayName="urls">
+              <div *ngFor="let url of urls.controls; let i = index; trackBy: trackByFn" class="url-input-row">
+                  <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+                  <mat-label>URL {{ i + 1 }}</mat-label>
+                  <input matInput placeholder="https://example.com" [formControlName]="i">
+                  <mat-error *ngIf="url.hasError('required')">URL is required.</mat-error>
+                  <mat-error *ngIf="url.hasError('invalidUrl') && !url.hasError('required')">Please enter a valid URL.</mat-error>
+                  </mat-form-field>
+                  <button *ngIf="urls.length > 1" type="button" mat-icon-button color="warn" (click)="removeUrl(i)" matTooltip="Remove URL">
+                    <mat-icon>remove_circle_outline</mat-icon>
+                  </button>
+              </div>
+            </div>
+            <div class="url-actions">
+              <button type="button" mat-stroked-button color="primary" (click)="addUrl()" [disabled]="isAddUrlDisabled()">
+                <mat-icon>add</mat-icon>
+                <span>Add URL</span>
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div *ngSwitchCase="ContentType.Docs">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Upload Document</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="docs-content" formGroupName="docs">
+              <div class="file-upload-wrapper">
+                <div class="file-drop-zone" (click)="fileInput.click()"
+                  [class.has-error]="dataSourceForm.get('docs.file')?.invalid && dataSourceForm.get('docs.file')?.touched"
+                  [class.file-over]="isDragging" (dragover)="handleDragOver($event)" (dragleave)="handleDragLeave($event)"
+                  (drop)="handleDrop($event)">
+                  <input hidden type="file" #fileInput (change)="onFileSelected($event)">
+                  <div *ngIf="!dataSourceForm.get('docs.file')?.value" class="file-drop-message">
+                    <mat-icon>upload_file</mat-icon>
+                    <span>Drag & drop a file here or click to select</span>
+                  </div>
+                  <div *ngIf="dataSourceForm.get('docs.file')?.value as file" class="file-name-display">
+                    <mat-icon class="file-icon">description</mat-icon>
+                    <span class="file-name-text">{{ file.name }}</span>
+                    <button mat-icon-button (click)="removeFile(); $event.stopPropagation()" type="button"
+                      matTooltip="Remove file">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <mat-error *ngIf="dataSourceForm.get('docs.file')?.hasError('invalidFileType')">
+                  Invalid file type. Allowed types are PDF, Word, and Excel.
+                </mat-error>
+                <mat-error
+                  *ngIf="dataSourceForm.get('docs.file')?.hasError('required') && dataSourceForm.get('docs.file')?.touched">
+                  A file is required.
+                </mat-error>
+              </div>
+              <mat-form-field appearance="outline" class="doc-type-field">
+                <mat-label>Document Type</mat-label>
+                <mat-select formControlName="docType">
+                  <mat-option value="pdf">PDF</mat-option>
+                  <mat-option value="word">Word</mat-option>
+                  <mat-option value="excel">Excel</mat-option>
+                </mat-select>
+                <mat-error *ngIf="dataSourceForm.get('docs.docType')?.hasError('required')">Document type is required.</mat-error>
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div *ngSwitchCase="ContentType.RawText">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Enter Raw Text</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-form-field appearance="outline" class="full-width" subscriptSizing="dynamic">
+              <mat-label>Raw Text</mat-label>
+              <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="5" cdkAutosizeMaxRows="10" formControlName="rawText"></textarea>
+              <mat-error *ngIf="dataSourceForm.get('rawText')?.hasError('required')">Raw text cannot be empty.</mat-error>
+              <mat-error *ngIf="dataSourceForm.get('rawText')?.hasError('minlength')">Please enter at least 10 characters.</mat-error>
+            </mat-form-field>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <div class="submit-container">
+      <button mat-raised-button color="primary" type="submit" [disabled]="dataSourceForm.invalid">Submit</button>
+    </div>
+  </form>
+</div>
+<app-loader [isLoading]="loading"></app-loader>

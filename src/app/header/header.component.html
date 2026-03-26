@@ -1,0 +1,35 @@
+<mat-toolbar color="primary" class="main-toolbar">
+  <button mat-icon-button (click)="toggleSidenav.emit()" class="mobile-menu-button">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <div class="nav-list-horizontal">
+    <button mat-button [routerLink]="['/']">
+      <mat-icon class="logo-icon">trending_up</mat-icon>
+      <span class="toolbar-title">Stock Master</span>
+    </button>
+    <button mat-button *ngFor="let item of navigationItems" [routerLink]="item.route"
+      routerLinkActive="active-nav-item">
+      <mat-icon>{{item.icon}}</mat-icon>
+      <span>{{item.label}}</span>
+    </button>
+  </div>
+  <span class="spacer"></span>
+
+  <ng-container *ngIf="currentUser$ | async as currentUser; else loginAction">
+    <div class="user-chip">
+      <mat-icon>account_circle</mat-icon>
+      <span>{{ currentUser.full_name || currentUser.email }}</span>
+    </div>
+    <button mat-button class="auth-action" (click)="logout()" aria-label="Logout">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </ng-container>
+
+  <ng-template #loginAction>
+    <button mat-button class="auth-action" [routerLink]="['/login']" aria-label="Go to login">
+      <mat-icon>account_circle</mat-icon>
+      <span>Login</span>
+    </button>
+  </ng-template>
+</mat-toolbar>

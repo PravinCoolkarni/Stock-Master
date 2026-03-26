@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { StockData } from 'src/model/StockData';
-import { Company } from 'src/model/Company';
+import { StockData } from 'src/interfaces/StockData';
+import { Company } from 'src/interfaces/Company';
+import { GeminiService } from 'src/services/gemini.service';
 
 @Component({
   selector: 'app-stock-dashboard',
@@ -16,14 +17,22 @@ export class StockDashboardComponent implements OnChanges {
   priceChange: number = 0;
   priceChangePercent: number = 0;
   displayedColumns: string[] = ['date', 'open', 'high', 'low', 'close', 'volume'];
+  prediction: any = null;
 
-  constructor() { }
+  constructor(private geminiService: GeminiService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['stockData'] && this.stockData.length > 0) {
       this.recentPrices = this.stockData.slice(0, 5);
       this.calculatePriceChange();
+      this.getPrediction();
     }
+  }
+
+  getPrediction(): void {
+    this.geminiService.getFuturePricePrediction(this.stockData).subscribe(prediction => {
+      this.prediction = prediction;
+    });
   }
 
   calculatePriceChange(): void {

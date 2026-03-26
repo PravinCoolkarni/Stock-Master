@@ -1,0 +1,179 @@
+.data-source-section {
+  padding: 20px;
+
+  h2 {
+    margin-bottom: 1.5rem;
+    /* 24px */
+  }
+}
+
+.source-selection {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+.source-content {
+  margin-top: 20px;
+
+  mat-card-header {
+    /* Add space between card title and content */
+    margin-bottom: 0.75rem;
+    /* 12px */
+  }
+}
+
+.source-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.docs-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+
+  // On smaller screens, stack the upload area and the document type selector vertically
+  // to ensure they are both visible and use the space effectively.
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    .doc-type-field {
+      width: 100%;
+    }
+
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper{
+      padding: 10px !important;
+    }
+  }
+}
+
+.file-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.file-drop-zone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.3s, background-color 0.3s;
+  min-height: 120px;
+  text-align: center;
+  color: #666;
+
+  &:hover,
+  &.file-over {
+    border-color: #3f51b5;
+    background-color: #f0f2ff;
+  }
+
+  &.has-error {
+    border-color: #f44336;
+  }
+}
+
+.file-drop-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+}
+
+.file-name-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  width: 100%;
+
+  .file-icon {
+    color: #666;
+    flex-shrink: 0;
+  }
+
+  .file-name-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.url-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.url-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  .mat-form-field {
+    flex-grow: 1;
+  }
+
+}
+
+.submit-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+.loading-section {
+  text-align: center;
+  padding: 40px 20px;
+
+  mat-spinner {
+    margin: 0 auto 15px;
+  }
+
+  p {
+    color: #666;
+    font-style: italic;
+    font-size: 14px;
+  }
+}
+
+// .file-upload-container{
+//   display: flex;
+//   align-items: center;
+// }
+
+// Custom styling for mat-error to make it more prominent
+::ng-deep mat-error {
+  background-color: #7d1913; // Material Design red color
+  color: white !important;
+  padding: 5px 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+/* Use ::ng-deep to apply styles to the inner elements of mat-form-field, bypassing view encapsulation. */
+
+::ng-deep .mat-mdc-form-field-error-wrapper {
+  padding: 0 !important;
+}

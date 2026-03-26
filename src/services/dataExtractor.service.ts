@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Company } from 'src/model/Company';
-import { StockApiResponse, StockData } from 'src/model/StockData';
-import { CompanyOverview } from 'src/model/CompanyOverview';
+import { Company } from 'src/interfaces/Company';
+import { StockApiResponse, StockData } from 'src/interfaces/StockData';
+import { CompanyOverview } from 'src/interfaces/CompanyOverview';
 import { Observable, observable, map } from 'rxjs';
 import { environment } from 'src/environment/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';

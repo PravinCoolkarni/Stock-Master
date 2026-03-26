@@ -7,7 +7,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { CompanyOverviewRoutingModule } from './company-overview-routing.module';
 import { CompanyOverviewComponent } from './company-overview.component';
 import { StockDashboardComponent } from './stock-dashboard/stock-dashboard.component';
-import { HeaderModule } from "../header/header.module";
 import { MaterialModule } from '../../material/material.module';
 
 
@@ -21,7 +20,6 @@ import { MaterialModule } from '../../material/material.module';
     CompanyOverviewRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    HeaderModule,
     MaterialModule
 ]
 })

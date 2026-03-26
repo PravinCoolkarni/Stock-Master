@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>Verify the Extracted Context</h1>
+<mat-dialog-content class="mat-typography">
+    <mat-form-field appearance="outline" class="textfield">
+        <mat-label>Extracted Context</mat-label>
+        <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="15" cdkAutosizeMaxRows="25"
+           [value]="data"></textarea>
+        <mat-error *ngIf="!data || data.length === 0">Extracted context cannot be empty.</mat-error>
+    </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button class="action-button" mat-dialog-close>Cancel</button>   
+    <button mat-raised-button class="action-button" color="primary" [disabled]="!data || data.length === 0" [mat-dialog-close]="data" cdkFocusInitial>Submit</button>
+</mat-dialog-actions>

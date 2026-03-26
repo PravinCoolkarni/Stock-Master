@@ -10,6 +10,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule }  from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -22,7 +27,12 @@ export const MATERIAL_MODULES = [
   MatTableModule,
   MatButtonModule,
   MatProgressSpinnerModule,
-  MatSidenavModule
+  MatSidenavModule,
+  MatRadioModule,
+  MatSelectModule,
+  MatMenuModule,
+  MatDialogModule,
+  MatSnackBarModule
 ];
 @NgModule({
   exports: [
