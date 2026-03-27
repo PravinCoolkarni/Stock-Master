@@ -1,17 +1,11 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# Project notes
+GEMINI.md
 
-# Compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+# OS files
+.DS_Store
+Thumbs.db
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
-
-# IDEs and editors
+# Editors and IDEs
 .idea/
 .project
 .classpath
@@ -19,26 +13,54 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
+.history/
 
-# Visual Studio Code
+# VS Code
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
 
-# Miscellaneous
-/.angular/cache
+# Angular / Node
+Frontend/node_modules/
+Frontend/dist/
+Frontend/tmp/
+Frontend/out-tsc/
+Frontend/bazel-out/
+Frontend/.angular/cache/
+Frontend/coverage/
+Frontend/typings/
+Frontend/connect.lock
+Frontend/libpeerconnection.log
+Frontend/npm-debug.log*
+Frontend/yarn-debug.log*
+Frontend/yarn-error.log*
+Frontend/pnpm-debug.log*
 .sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
 testem.log
-/typings
 
-# System files
-.DS_Store
-Thumbs.db
+# Python / FastAPI
+Backend/.env
+Backend/.venv/
+Backend/venv/
+Backend/env/
+Backend/myenv/
+Backend/__pycache__/
+Backend/.pytest_cache/
+Backend/.mypy_cache/
+Backend/.ruff_cache/
+Backend/.coverage
+Backend/htmlcov/
+Backend/*.pyc
+Backend/*.pyo
+Backend/*.pyd
+Backend/**/*.pyc
+Backend/**/*.pyo
+Backend/**/*.pyd
+Backend/**/*.py,cover
 
-GEMINI.md
+# Local database and generated vector store
+Backend/app.db
+Backend/my_vector_db/
+Backend/app/DB/my_vector_db/
