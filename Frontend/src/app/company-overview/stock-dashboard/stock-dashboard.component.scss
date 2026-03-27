@@ -1,6 +1,7 @@
+@use '../../../styles/index' as ui;
+
 .dashboard-container {
-  padding: 20px;
-  background: #f5f5f5;
+  @include ui.page-surface();
 }
 
 .loading-spinner {
@@ -8,12 +9,11 @@
   padding: 60px;
 
   mat-spinner {
-    margin: 0 auto 20px;
+    margin: 0 auto ui.$space-5;
   }
 
   p {
-    color: #666;
-    font-style: italic;
+    @include ui.loading-copy();
     font-size: 16px;
   }
 }
@@ -21,17 +21,17 @@
 .dashboard-content {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: ui.$space-5;
 }
 
 .price-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: ui.$gradient-brand;
+  color: ui.$color-text-inverse;
   box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
 
   mat-card-header {
     mat-card-title {
-      color: white;
+      color: ui.$color-text-inverse;
       font-size: 24px;
       font-weight: 600;
     }
@@ -44,7 +44,7 @@
 
   .current-price {
     text-align: center;
-    padding: 20px 0;
+    padding: ui.$space-5 0;
 
     .price {
       display: block;
@@ -61,13 +61,8 @@
       font-size: 18px;
       font-weight: 500;
 
-      &.positive {
-        color: #4caf50;
-      }
-
-      &.negative {
-        color: #f44336;
-      }
+      &.positive { color: ui.$color-success; }
+      &.negative { color: ui.$color-danger; }
 
       mat-icon {
         font-size: 20px;
@@ -76,111 +71,95 @@
   }
 }
 
-.recent-prices-card {
-  background: white;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+.recent-prices-card,
+.stock-table-card {
+  @include ui.card-surface(12px, 0 2px 12px rgba(0, 0, 0, 0.1));
 
   mat-card-title {
-    color: #333;
+    color: ui.$color-text-primary;
     font-size: 20px;
     font-weight: 600;
   }
+}
 
-  .price-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    margin-top: 15px;
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
 
-    .price-item {
-      padding: 15px;
-      background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-      border-radius: 8px;
-      border: 1px solid rgba(102, 126, 234, 0.1);
-      text-align: center;
+  .price-item {
+    padding: 15px;
+    background: ui.$gradient-brand-soft;
+    border-radius: ui.$radius-sm;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    text-align: center;
+    @include ui.interactive-lift();
 
-      .date {
-        font-weight: 600;
-        color: #667eea;
-        font-size: 14px;
-        margin-bottom: 8px;
+    .date {
+      font-weight: 600;
+      color: ui.$color-primary-500;
+      font-size: 14px;
+      margin-bottom: ui.$space-2;
+    }
+
+    .price-values {
+      .close-price {
+        font-size: 20px;
+        font-weight: 700;
+        color: ui.$color-text-primary;
+        margin-bottom: 5px;
       }
 
-      .price-values {
-        .close-price {
-          font-size: 20px;
-          font-weight: 700;
-          color: #333;
-          margin-bottom: 5px;
-        }
-
-        .price-range {
-          font-size: 12px;
-          color: #666;
-          margin-bottom: 3px;
-        }
-
-        .volume {
-          font-size: 11px;
-          color: #888;
-        }
+      .price-range {
+        font-size: 12px;
+        color: ui.$color-text-muted;
+        margin-bottom: 3px;
       }
 
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-        transition: all 0.2s ease-in-out;
+      .volume {
+        font-size: 11px;
+        color: ui.$color-text-soft;
       }
     }
   }
 }
 
-.stock-table-card {
-  background: white;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+.stock-data-table {
+  width: 100%;
+  margin-top: 15px;
+  border-radius: ui.$radius-sm;
+  overflow: hidden;
+  box-shadow: ui.$shadow-sm;
 
-  mat-card-title {
-    color: #333;
-    font-size: 20px;
+  mat-header-cell {
+    background: ui.$gradient-brand;
+    color: ui.$color-text-inverse;
     font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    border: none;
   }
 
-  .stock-data-table {
-    width: 100%;
-    margin-top: 15px;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  mat-cell {
+    font-size: 13px;
+    text-align: center;
+    padding: 12px 8px;
+    border-bottom: 1px solid #f0f0f0;
 
-    mat-header-cell {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-      text-align: center;
-      border: none;
+    &:first-child {
+      font-weight: 500;
+    }
+  }
+
+  mat-row {
+    &:hover {
+      background: ui.$color-surface-alt;
+      transition: background-color ui.$transition-fast;
     }
 
-    mat-cell {
-      font-size: 13px;
-      text-align: center;
-      padding: 12px 8px;
-      border-bottom: 1px solid #f0f0f0;
-
-      &:first-child {
-        font-weight: 500;
-      }
-    }
-
-    mat-row {
-      &:hover {
-        background: #f8f9ff;
-        transition: background-color 0.2s ease;
-      }
-
-      &:nth-child(even) {
-        background: #fafafa;
-      }
+    &:nth-child(even) {
+      background: #fafafa;
     }
   }
 }
@@ -189,7 +168,7 @@
   text-align: center;
   background: #fff3cd;
   border: 1px solid #ffeaa7;
-  margin-top: 20px;
+  margin-top: ui.$space-5;
 
   mat-card-content {
     display: flex;
@@ -198,13 +177,16 @@
     gap: 10px;
     padding: 30px;
 
-    mat-icon {
-      font-size: 48px;
+    mat-icon,
+    p {
       color: #856404;
     }
 
+    mat-icon {
+      font-size: 48px;
+    }
+
     p {
-      color: #856404;
       font-size: 16px;
       margin: 0;
     }
@@ -212,21 +194,19 @@
 }
 
 .prediction-card {
-  background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
-  color: white;
+  background: ui.$gradient-info;
+  color: ui.$color-text-inverse;
   box-shadow: 0 4px 16px rgba(102, 166, 255, 0.3);
 
-  mat-card-header {
-    mat-card-title {
-      color: white;
-      font-size: 24px;
-      font-weight: 600;
-    }
+  mat-card-header mat-card-title {
+    color: ui.$color-text-inverse;
+    font-size: 24px;
+    font-weight: 600;
   }
 
   .prediction {
     text-align: center;
-    padding: 20px 0;
+    padding: ui.$space-5 0;
 
     .price {
       display: block;
@@ -242,53 +222,53 @@
   }
 }
 
-@media (max-width: 1024px) {
+@include ui.breakpoint-down(1024px) {
   .price-grid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
-    gap: 12px !important;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
   }
 
   .price-card .current-price .price {
-    font-size: 36px !important;
+    font-size: 36px;
   }
 
   .price-card .current-price .price-change {
-    font-size: 16px !important;
+    font-size: 16px;
   }
 }
 
-@media (max-width: 768px) {
+@include ui.breakpoint-down(768px) {
   .dashboard-container {
     padding: 15px;
   }
 
   .price-grid {
-    grid-template-columns: 1fr 1fr !important;
-    gap: 10px !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
 
   .price-item {
-    padding: 12px !important;
+    padding: 12px;
+  }
 
-    .close-price {
-      font-size: 18px !important;
-    }
+  .price-item .close-price {
+    font-size: 18px;
   }
 
   .stock-data-table {
-    font-size: 11px !important;
+    font-size: 11px;
 
     mat-header-cell,
     mat-cell {
-      padding: 8px 4px !important;
+      padding: 8px 4px;
     }
   }
 
   .price-card .current-price .price {
-    font-size: 32px !important;
+    font-size: 32px;
   }
 
   .price-card .current-price .price-change {
-    font-size: 14px !important;
+    font-size: 14px;
   }
 }

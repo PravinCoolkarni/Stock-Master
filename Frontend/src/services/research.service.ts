@@ -7,7 +7,7 @@ import { environment } from 'src/environment/environment';
     providedIn: 'root'
 })
 export class ResearchService {
-    apiURL = environment.FastAPIURL;
+    apiURL = environment.FastAPIURL + 'research/';
 
     headers = {
         'Content-Type': 'application/json',

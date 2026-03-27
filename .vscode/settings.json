@@ -1,0 +1,7 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}\\Backend\\myenv\\Scripts\\python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}\\Backend",
+    "${workspaceFolder}\\Backend\\app"
+  ]
+}

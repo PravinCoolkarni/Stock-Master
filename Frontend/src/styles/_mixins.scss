@@ -1,0 +1,95 @@
+@use 'tokens' as t;
+
+@mixin define-css-vars() {
+  :root {
+    --color-bg-page: #{t.$color-bg-page};
+    --color-bg-subtle: #{t.$color-bg-subtle};
+    --color-surface: #{t.$color-surface};
+    --color-surface-muted: #{t.$color-surface-muted};
+    --color-text-primary: #{t.$color-text-primary};
+    --color-text-secondary: #{t.$color-text-secondary};
+    --color-text-muted: #{t.$color-text-muted};
+    --color-primary: #{t.$color-primary-500};
+    --color-primary-strong: #{t.$color-primary-600};
+    --color-accent: #{t.$color-accent-500};
+    --color-border: #{t.$color-border};
+    --shadow-md: #{t.$shadow-md};
+    --gradient-brand: #{t.$gradient-brand};
+    --form-field-height: #{t.$form-field-height};
+    --toolbar-height: #{t.$toolbar-height};
+  }
+}
+
+@mixin page-surface($padding: t.$space-5, $background: t.$color-bg-page) {
+  padding: $padding;
+  background: $background;
+}
+
+@mixin card-surface($radius: t.$radius-xl, $shadow: t.$shadow-md, $background: t.$color-surface) {
+  background: $background;
+  border-radius: $radius;
+  box-shadow: $shadow;
+}
+
+@mixin section-title() {
+  color: t.$color-text-primary;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+@mixin title-rule($border-color: t.$color-primary-500) {
+  @include section-title();
+  border-bottom: 2px solid $border-color;
+  padding-bottom: t.$space-2;
+}
+
+@mixin brand-button() {
+  border: 0;
+  border-radius: t.$radius-md;
+  background: t.$gradient-brand;
+  color: t.$color-text-inverse;
+  font-weight: 600;
+  box-shadow: t.$shadow-brand;
+  transition: transform t.$transition-fast, box-shadow t.$transition-fast, opacity t.$transition-fast;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 28px rgba(102, 126, 234, 0.32);
+  }
+
+  &:disabled {
+    opacity: 0.72;
+    box-shadow: none;
+  }
+}
+
+@mixin auth-page-background() {
+  min-height: 100vh;
+  background: t.$gradient-auth-bg;
+}
+
+@mixin auth-shell-card() {
+  @include card-surface(t.$radius-xl, t.$shadow-lg, rgba(255, 255, 255, 0.96));
+  border: 1px solid rgba(102, 126, 234, 0.12);
+}
+
+@mixin loading-copy() {
+  color: t.$color-text-muted;
+  font-style: italic;
+}
+
+@mixin interactive-lift($distance: -2px, $shadow: 0 4px 12px rgba(102, 126, 234, 0.2)) {
+  transition: transform t.$transition-fast, box-shadow t.$transition-fast;
+
+  &:hover {
+    transform: translateY($distance);
+    box-shadow: $shadow;
+  }
+}
+
+@mixin breakpoint-down($width) {
+  @media (max-width: $width) {
+    @content;
+  }
+}
+

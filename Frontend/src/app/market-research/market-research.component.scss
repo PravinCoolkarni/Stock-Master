@@ -1,25 +1,24 @@
+@use '../../styles/index' as ui;
+
 .data-source-section {
-  padding: 20px;
+  padding: ui.$space-5;
 
   h2 {
     margin-bottom: 1.5rem;
-    /* 24px */
   }
 }
 
 .source-selection {
-  margin-bottom: 20px;
+  margin-bottom: ui.$space-5;
   display: flex;
-  gap: 20px;
+  gap: ui.$space-5;
 }
 
 .source-content {
-  margin-top: 20px;
+  margin-top: ui.$space-5;
 
   mat-card-header {
-    /* Add space between card title and content */
     margin-bottom: 0.75rem;
-    /* 12px */
   }
 }
 
@@ -35,11 +34,9 @@
 .docs-content {
   display: flex;
   align-items: flex-start;
-  gap: 20px;
+  gap: ui.$space-5;
 
-  // On smaller screens, stack the upload area and the document type selector vertically
-  // to ensure they are both visible and use the space effectively.
-  @media (max-width: 768px) {
+  @include ui.breakpoint-down(768px) {
     flex-direction: column;
     align-items: stretch;
 
@@ -47,7 +44,7 @@
       width: 100%;
     }
 
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper{
+    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
       padding: 10px !important;
     }
   }
@@ -64,23 +61,23 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: ui.$space-5;
   border: 2px dashed #ccc;
-  border-radius: 8px;
+  border-radius: ui.$radius-sm;
   cursor: pointer;
-  transition: border-color 0.3s, background-color 0.3s;
+  transition: border-color ui.$transition-medium, background-color ui.$transition-medium;
   min-height: 120px;
   text-align: center;
-  color: #666;
+  color: ui.$color-text-muted;
 
   &:hover,
   &.file-over {
-    border-color: #3f51b5;
-    background-color: #f0f2ff;
+    border-color: ui.$color-primary-600;
+    background-color: ui.$color-surface-alt;
   }
 
   &.has-error {
-    border-color: #f44336;
+    border-color: ui.$color-danger;
   }
 }
 
@@ -88,7 +85,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: ui.$space-2;
 
   mat-icon {
     font-size: 48px;
@@ -100,12 +97,12 @@
 .file-name-display {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: ui.$space-3;
   font-weight: 500;
   width: 100%;
 
   .file-icon {
-    color: #666;
+    color: ui.$color-text-muted;
     flex-shrink: 0;
   }
 
@@ -124,21 +121,23 @@
 .url-input-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ui.$space-2;
   margin-bottom: 10px;
 
   .mat-form-field {
     flex-grow: 1;
   }
 
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    height: var(--form-field-height);
+  }
 }
 
 .submit-container {
-  margin-top: 20px;
+  margin-top: ui.$space-5;
   display: flex;
   justify-content: flex-end;
 }
-
 
 .loading-section {
   text-align: center;
@@ -149,30 +148,20 @@
   }
 
   p {
-    color: #666;
-    font-style: italic;
+    @include ui.loading-copy();
     font-size: 14px;
   }
 }
 
-// .file-upload-container{
-//   display: flex;
-//   align-items: center;
-// }
-
-// Custom styling for mat-error to make it more prominent
 ::ng-deep mat-error {
-  background-color: #7d1913; // Material Design red color
-  color: white !important;
+  background-color: #7d1913;
+  color: ui.$color-text-inverse !important;
   padding: 5px 10px;
-  margin: 10px 0;
+  margin: 10px 0 0;
   border-radius: 4px;
   display: inline-block;
-  margin-top: 5px;
   font-weight: 600;
 }
-
-/* Use ::ng-deep to apply styles to the inner elements of mat-form-field, bypassing view encapsulation. */
 
 ::ng-deep .mat-mdc-form-field-error-wrapper {
   padding: 0 !important;

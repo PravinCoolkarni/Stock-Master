@@ -1,20 +1,22 @@
+@use '../../styles/index' as ui;
+
 .company-overview-container {
   display: flex;
   height: 100vh;
-  background: #f5f5f5;
+  background: ui.$color-bg-page;
 }
 
 .left-panel {
   width: 400px;
-  background: white;
+  background: ui.$color-surface;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: ui.$space-5;
   overflow-y: auto;
 }
 
 .right-panel {
   flex: 1;
-  padding: 20px;
+  padding: ui.$space-5;
   overflow-y: auto;
 }
 
@@ -22,39 +24,36 @@
   margin-bottom: 25px;
 
   .selector-title {
-    color: #333;
+    @include ui.title-rule();
     font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: ui.$space-5;
     text-align: center;
-    border-bottom: 2px solid #667eea;
-    padding-bottom: 10px;
   }
 
   .company-form {
-    margin-bottom: 20px;
+    margin-bottom: ui.$space-5;
   }
 
   .company-field {
     width: 100%;
 
     mat-icon {
-      color: #667eea;
+      color: ui.$color-primary-500;
     }
   }
 
   .company-option {
-    padding: 8px 0;
+    padding: ui.$space-2 0;
 
     .company-name {
       font-weight: 500;
-      color: #333;
+      color: ui.$color-text-primary;
       font-size: 14px;
     }
 
     .company-symbol {
       font-size: 12px;
-      color: #666;
+      color: ui.$color-text-muted;
       margin-top: 2px;
     }
   }
@@ -62,33 +61,29 @@
 
 .company-overview-section {
   .overview-title {
-    color: #333;
+    @include ui.title-rule();
     font-size: 18px;
-    font-weight: 600;
     margin-bottom: 15px;
     text-align: center;
-    border-bottom: 2px solid #667eea;
-    padding-bottom: 10px;
   }
 
   .overview-card {
-    margin-bottom: 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
+    margin-bottom: ui.$space-5;
+    @include ui.card-surface(12px, 0 2px 12px rgba(0, 0, 0, 0.1));
 
     &.basic-info {
-      background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+      background: ui.$gradient-brand-soft;
       border: 1px solid rgba(102, 126, 234, 0.2);
 
       mat-card-header {
         mat-card-title {
-          color: #667eea;
+          color: ui.$color-primary-500;
           font-size: 16px;
           font-weight: 600;
         }
 
         mat-card-subtitle {
-          color: #666;
+          color: ui.$color-text-muted;
           font-size: 12px;
           margin-top: 4px;
         }
@@ -97,24 +92,24 @@
       .info-grid {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 8px;
+        gap: ui.$space-2;
 
         .info-item {
           font-size: 12px;
-          color: #555;
+          color: ui.$color-text-secondary;
 
           strong {
-            color: #333;
+            color: ui.$color-text-primary;
           }
         }
       }
     }
 
     &.financial-metrics {
-      background: white;
+      background: ui.$color-surface;
 
       mat-card-title {
-        color: #333;
+        color: ui.$color-text-primary;
         font-size: 16px;
         font-weight: 600;
       }
@@ -128,20 +123,20 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 8px;
-          background: #f8f9ff;
+          padding: ui.$space-2;
+          background: ui.$color-surface-alt;
           border-radius: 6px;
           border: 1px solid rgba(102, 126, 234, 0.1);
 
           .metric-label {
             font-size: 11px;
-            color: #666;
+            color: ui.$color-text-muted;
             font-weight: 500;
           }
 
           .metric-value {
             font-size: 12px;
-            color: #333;
+            color: ui.$color-text-primary;
             font-weight: 600;
           }
         }
@@ -149,10 +144,10 @@
     }
 
     &.description {
-      background: white;
+      background: ui.$color-surface;
 
       mat-card-title {
-        color: #333;
+        color: ui.$color-text-primary;
         font-size: 16px;
         font-weight: 600;
       }
@@ -160,7 +155,7 @@
       .description-text {
         font-size: 12px;
         line-height: 1.5;
-        color: #555;
+        color: ui.$color-text-secondary;
         text-align: justify;
       }
     }
@@ -176,8 +171,7 @@
   }
 
   p {
-    color: #666;
-    font-style: italic;
+    @include ui.loading-copy();
     font-size: 14px;
   }
 }
@@ -191,9 +185,7 @@
   .welcome-card {
     max-width: 500px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    background: white;
+    @include ui.card-surface(12px, 0 4px 12px rgba(0, 0, 0, 0.1));
 
     mat-card-header {
       display: flex;
@@ -202,14 +194,14 @@
     }
 
     mat-card-title {
-      color: #667eea;
+      color: ui.$color-primary-500;
       font-size: 24px;
       font-weight: 600;
     }
 
     mat-card-subtitle {
-      color: #666;
-      margin-top: 8px;
+      color: ui.$color-text-muted;
+      margin-top: ui.$space-2;
     }
 
     mat-card-content {
@@ -219,7 +211,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@include ui.breakpoint-down(768px) {
   .company-overview-container {
     flex-direction: column;
     height: auto;
@@ -236,57 +228,12 @@
     padding: 15px;
   }
 
-  .company-selector {
-    .selector-title {
-      font-size: 16px;
-    }
+  .company-selector .selector-title,
+  .company-overview-section .overview-title {
+    font-size: 16px;
   }
 
-  .company-overview-section {
-    .overview-title {
-      font-size: 16px;
-    }
-
-    .overview-card {
-      margin-bottom: 15px;
-
-      &.basic-info {
-        mat-card-title {
-          font-size: 14px !important;
-        }
-
-        .info-item {
-          font-size: 11px !important;
-        }
-      }
-
-      &.financial-metrics {
-        mat-card-title {
-          font-size: 14px !important;
-        }
-
-        .metric-item {
-          padding: 6px !important;
-
-          .metric-label {
-            font-size: 10px !important;
-          }
-
-          .metric-value {
-            font-size: 11px !important;
-          }
-        }
-      }
-
-      &.description {
-        mat-card-title {
-          font-size: 14px !important;
-        }
-
-        .description-text {
-          font-size: 11px !important;
-        }
-      }
-    }
+  .company-overview-section .overview-card {
+    margin-bottom: 15px;
   }
 }

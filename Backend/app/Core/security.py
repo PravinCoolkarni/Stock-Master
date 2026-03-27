@@ -11,7 +11,10 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return pwd_context.verify(plain, hashed)
+    try:
+        return pwd_context.verify(plain, hashed)
+    except ValueError:
+        return False
 
 def create_access_token(subject: Any, role: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(

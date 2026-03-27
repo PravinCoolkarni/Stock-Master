@@ -20,6 +20,11 @@
             "outputPath": "dist/stock-master",
             "index": "src/index.html",
             "main": "src/main.ts",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
+            },
             "polyfills": [
               "zone.js"
             ],
@@ -89,6 +94,11 @@
               "zone.js",
               "zone.js/testing"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src"
+              ]
+            },
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [

@@ -1,28 +1,14 @@
-
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
-// Plus imports for other components in your app.
+@use 'styles/index' as ui;
 
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
+
 @include mat.core();
-
-/* Bootstrap 5 */
 @import 'bootstrap/scss/bootstrap';
 
-// Define the palettes for your theme using the Material Design palettes available in palette.scss
-// (imported above). For each palette, you can optionally specify a default, lighter, and darker
-// hue. Available color palettes: https://material.io/design/color/
-$StockMaster-primary: mat.define-palette(mat.$indigo-palette);
-$StockMaster-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
 
-// The warn palette is optional (defaults to red).
+$StockMaster-primary: mat.define-palette(mat.$indigo-palette, 500, 300, 700);
+$StockMaster-accent: mat.define-palette(mat.$deep-purple-palette, 400, 200, 600);
 $StockMaster-warn: mat.define-palette(mat.$red-palette);
-
-// Create the theme object. A theme consists of configurations for individual
-// theming systems such as "color" or "typography".
 $StockMaster-theme: mat.define-light-theme((
   color: (
     primary: $StockMaster-primary,
@@ -31,122 +17,99 @@ $StockMaster-theme: mat.define-light-theme((
   )
 ));
 
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
+
 @include mat.all-component-themes($StockMaster-theme);
+@include ui.define-css-vars();
 
-/* You can add global styles to this file, and also import other style files */
 
-
-// ── Global resets ─────────────────────────────────────────────────────────────
-*, *::before, *::after { box-sizing: border-box; }
-
-html, body { 
-  height: 100%; 
-  margin: 0;
-  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
-  background: #f5f5f5;
-}
-
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-/* In your root styles or a theme file */
-:root {
-  --form-field-height: 44px;
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  background: ui.$color-bg-page;
+  color: ui.$color-text-primary;
 }
 
-/* In market-research.component.scss */
-:host ::ng-deep .url-input-row .mat-mdc-text-field-wrapper {
-  height: var(--form-field-height);
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(102, 126, 234, 0.08), transparent 30%),
+    linear-gradient(180deg, ui.$color-surface-muted 0%, ui.$color-bg-page 100%);
 }
 
-/* Custom scrollbar styles */
+
+a {
+  color: ui.$color-primary-500;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
 }
 
+
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: ui.$color-surface-alt;
 }
 
+
 ::-webkit-scrollbar-thumb {
-  background: #667eea;
+  background: ui.$color-primary-500;
   border-radius: 3px;
 }
 
+
 ::-webkit-scrollbar-thumb:hover {
-  background: #5a6fd8;
+  background: ui.$color-primary-600;
 }
 
-/* Material theme customization */
-.mat-form-field-outline-thick {
-  color: #667eea !important;
-}
-
-.mat-form-field.mat-focused .mat-form-field-outline-thick {
-  color: #667eea !important;
-}
-
-.mat-form-field.mat-focused .mat-form-field-label {
-  color: #667eea !important;
-}
 
 .mat-option:hover {
-  background: #f8f9ff !important;
+  background: ui.$color-surface-alt !important;
 }
+
 
 .mat-option.mat-selected {
-  background: #667eea !important;
-  color: white !important;
+  background: ui.$color-primary-500 !important;
+  color: ui.$color-text-inverse !important;
 }
 
-/* Card animations */
+
 .mat-card {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform ui.$transition-fast, box-shadow ui.$transition-fast;
 }
+
 
 .mat-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: ui.$shadow-md !important;
 }
 
-/* Button styles */
+
 .mat-raised-button.mat-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: ui.$gradient-brand;
   border: none;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: ui.$shadow-brand;
 }
+
 
 .mat-raised-button.mat-primary:hover {
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-/* Loading spinner custom color */
+
 .mat-progress-spinner circle {
-  stroke: #667eea;
+  stroke: ui.$color-primary-500;
 }
 
-/* Table styling */
-.mat-table {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.mat-header-row {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.mat-header-cell {
-  color: white !important;
-  font-weight: 600 !important;
-}
-
-
-// ── Snackbar overrides ────────────────────────────────────────────────────────
 .snack-success .mdc-snackbar__surface {
-  background: #166534 !important;
-  color: #fff !important;
+  background: ui.$color-success-dark !important;
+  color: ui.$color-text-inverse !important;
 }

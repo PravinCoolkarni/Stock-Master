@@ -55,10 +55,10 @@ def get_research_context(request: ResearchRequest):
 def embed_context(request: EmbedContextRequest):
     print(request.context)
     chunks = chunk_text_service(request.context)
-    store_result = store_embeddings_service(chunks, request.session_id)
+    store_result = store_embeddings_service(chunks)
     return store_result
 
 @router.get("/query_context", dependencies=[Depends(get_current_user)])
-def query_context(query: str, session_id: str):
-    results = query_context_service(query, session_id=session_id)
+def query_context(query: str):
+    results = query_context_service(query)
     return results

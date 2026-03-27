@@ -1,21 +1,19 @@
+@use '../../../styles/index' as ui;
+
 .auth-page {
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(102, 126, 234, 0.18), transparent 32%),
-    radial-gradient(circle at bottom right, rgba(118, 75, 162, 0.12), transparent 28%),
-    linear-gradient(180deg, #f7f9fc 0%, #eef3f9 100%);
+  @include ui.auth-page-background();
 }
 
 .auth-shell {
-  padding: 32px 20px;
+  padding: ui.$space-8 ui.$space-5;
 }
 
 .auth-side-panel {
-  background: linear-gradient(160deg, #28437f 0%, #667eea 58%, #8ea5ff 100%);
-  color: #fff;
-  border-radius: 24px;
-  padding: 36px;
-  box-shadow: 0 20px 60px rgba(31, 59, 120, 0.24);
+  background: ui.$gradient-auth-register;
+  color: ui.$color-text-inverse;
+  border-radius: ui.$radius-xl;
+  padding: ui.$space-9;
+  box-shadow: ui.$shadow-xl;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -26,24 +24,24 @@
 .mobile-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: ui.$space-3;
   font-weight: 600;
 }
 
 .brand-badge {
   width: fit-content;
   padding: 10px 14px;
-  border-radius: 999px;
+  border-radius: ui.$radius-pill;
   background: rgba(255, 255, 255, 0.14);
 }
 
 .mobile-brand {
-  color: #667eea;
+  color: ui.$color-primary-500;
   margin-bottom: 14px;
 }
 
 .hero-copy {
-  margin: 40px 0;
+  margin: ui.$space-10 0;
 }
 
 .eyebrow,
@@ -52,7 +50,7 @@
   letter-spacing: 0.14em;
   font-size: 12px;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: ui.$space-3;
 }
 
 .hero-copy h1 {
@@ -71,14 +69,14 @@
 
 .feature-list {
   display: grid;
-  gap: 16px;
+  gap: ui.$space-4;
 }
 
 .feature-card {
   display: flex;
   gap: 14px;
   padding: 18px;
-  border-radius: 18px;
+  border-radius: ui.$radius-lg;
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(8px);
 
@@ -86,7 +84,7 @@
     width: 40px;
     height: 40px;
     font-size: 40px;
-    color: #fff;
+    color: ui.$color-text-inverse;
   }
 
   h3 {
@@ -104,56 +102,53 @@
 }
 
 .auth-card {
-  border-radius: 24px;
-  border: 1px solid rgba(102, 126, 234, 0.12);
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.96);
+  @include ui.auth-shell-card();
 
   ::ng-deep .mat-mdc-card-content {
-    padding: 36px;
+    padding: ui.$space-9;
   }
 }
 
 .auth-header {
-  margin-bottom: 24px;
+  margin-bottom: ui.$space-6;
 
   h2 {
-    margin: 0 0 8px;
+    margin: 0 0 ui.$space-2;
     font-size: 32px;
     font-weight: 700;
-    color: #1f2937;
+    color: ui.$color-text-primary;
   }
 }
 
 .section-label {
-  color: #667eea;
+  color: ui.$color-primary-500;
 }
 
 .section-copy {
-  color: #6b7280;
+  color: ui.$color-text-muted;
   margin: 0;
 }
 
 .error-banner {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: ui.$space-2;
   padding: 12px 14px;
   margin-bottom: 18px;
-  border-radius: 14px;
-  background: #fff1f2;
-  color: #be123c;
+  border-radius: ui.$radius-md;
+  background: ui.$color-danger-bg;
+  color: ui.$color-danger-dark;
   border: 1px solid rgba(190, 24, 93, 0.18);
 }
 
 .google-btn {
   height: 52px;
-  border-radius: 14px;
-  border: 1px solid #d8dfef;
+  border-radius: ui.$radius-md;
+  border: 1px solid ui.$color-border;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: ui.$space-3;
   font-weight: 600;
   color: #334155;
 }
@@ -170,14 +165,14 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: #dbe2f0;
+    background: ui.$color-border;
   }
 
   span {
     position: relative;
     padding: 0 14px;
-    background: #fff;
-    color: #64748b;
+    background: ui.$color-surface;
+    color: ui.$color-text-muted;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -190,23 +185,23 @@
   }
 
   .mat-mdc-text-field-wrapper {
-    border-radius: 14px !important;
-    background: #fff !important;
+    border-radius: ui.$radius-md !important;
+    background: ui.$color-surface !important;
   }
 
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
   .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
-    border-color: #667eea !important;
+    border-color: ui.$color-primary-500 !important;
     border-width: 2px !important;
   }
 }
 
 .strength-panel {
-  border: 1px solid #dbe2f0;
+  border: 1px solid ui.$color-border;
   border-radius: 16px;
   padding: 14px 16px;
-  background: #f8fbff;
+  background: ui.$color-surface-muted;
 }
 
 .strength-bars {
@@ -218,60 +213,44 @@
 
 .bar {
   height: 6px;
-  border-radius: 999px;
-  background: #dbe2f0;
+  border-radius: ui.$radius-pill;
+  background: ui.$color-border;
 
   &.active {
-    &.weak { background: #ef4444; }
+    &.weak { background: ui.$color-danger; }
     &.fair { background: #f97316; }
     &.good { background: #eab308; }
-    &.strong { background: #22c55e; }
+    &.strong { background: ui.$color-success; }
   }
 }
 
 .strength-copy {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: ui.$space-3;
   font-size: 13px;
 }
 
 .strength-label {
-  color: #64748b;
+  color: ui.$color-text-muted;
 }
 
 .strength-value {
   font-weight: 700;
 
-  &.weak { color: #ef4444; }
+  &.weak { color: ui.$color-danger; }
   &.fair { color: #f97316; }
   &.good { color: #eab308; }
-  &.strong { color: #22c55e; }
+  &.strong { color: ui.$color-success; }
 }
 
 .submit-btn {
   height: 52px;
-  border: 0;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  font-weight: 600;
-  box-shadow: 0 12px 24px rgba(102, 126, 234, 0.25);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 16px 28px rgba(102, 126, 234, 0.32);
-  }
-
-  &:disabled {
-    opacity: 0.72;
-    box-shadow: none;
-  }
+  @include ui.brand-button();
 }
 
 .btn-spinner {
@@ -279,15 +258,15 @@
 }
 
 .footer-note {
-  margin-top: 24px;
+  margin-top: ui.$space-6;
   display: flex;
   justify-content: center;
   gap: 6px;
-  color: #6b7280;
+  color: ui.$color-text-muted;
   font-size: 14px;
 
   a {
-    color: #667eea;
+    color: ui.$color-primary-500;
     text-decoration: none;
     font-weight: 600;
 
@@ -297,7 +276,7 @@
   }
 }
 
-@media (max-width: 991px) {
+@include ui.breakpoint-down(991px) {
   .auth-shell {
     padding: 20px 12px;
   }
