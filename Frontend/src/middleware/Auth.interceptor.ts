@@ -13,6 +13,7 @@ import { environment } from 'src/environment/environment';
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+  private readonly refreshUrl = environment.FastAPIURL + 'auth/refresh';
 
   constructor(
     private http: HttpClient,
@@ -25,7 +26,11 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authReq).pipe(
       catchError(err => {
-        if (err instanceof HttpErrorResponse && err.status === 401) {
+        if (
+          err instanceof HttpErrorResponse &&
+          err.status === 401 &&
+          !this.isAuthRoute(req.url)
+        ) {
           return this.handle401(req, next);
         }
         return throwError(() => err);
@@ -37,6 +42,18 @@ export class AuthInterceptor implements HttpInterceptor {
     return req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
   }
 
+  private isAuthRoute(url: string): boolean {
+    return url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/refresh');
+  }
+
+  private clearSessionAndRedirect(): void {
+    this.isRefreshing = false;
+    this.refreshTokenSubject.next(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    this.router.navigate(['/auth/login']);
+  }
+
   private handle401(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
@@ -44,7 +61,7 @@ export class AuthInterceptor implements HttpInterceptor {
       const refresh = localStorage.getItem('refresh_token');
 
       if (refresh) {
-        return this.http.post<any>(environment.FastAPIURL + 'auth/refresh', { refresh_token: refresh }).pipe(
+        return this.http.post<any>(this.refreshUrl, { refresh_token: refresh }).pipe(
           switchMap(res => {
             this.isRefreshing = false;
             localStorage.setItem('access_token', res.access_token);
@@ -53,14 +70,14 @@ export class AuthInterceptor implements HttpInterceptor {
             return next.handle(this.addToken(req, res.access_token));
           }),
           catchError(err => {
-            this.isRefreshing = false;
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            this.router.navigate(['/login']);
+            this.clearSessionAndRedirect();
             return throwError(() => err);
           })
         );
       }
+
+      this.clearSessionAndRedirect();
+      return throwError(() => new Error('Refresh token is missing.'));
     }
 
     return this.refreshTokenSubject.pipe(

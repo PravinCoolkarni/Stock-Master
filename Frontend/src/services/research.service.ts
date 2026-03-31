@@ -2,26 +2,43 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environment/environment';
+import {
+  ResearchChatMessage,
+  ResearchChatSession,
+  ResearchContextResponse,
+  ResearchSessionDetail,
+  ResearchSessionSeedResponse,
+} from 'src/interfaces/ResearchChat';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class ResearchService {
-    apiURL = environment.FastAPIURL + 'research/';
+  private readonly apiURL = environment.FastAPIURL + 'research/';
 
-    headers = {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-    }
-    constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-    getResearchContext(params: any): Observable<any> {
-        return this.http.post(this.apiURL + 'get_research_context', params, {headers: this.headers});
-    }
+  getResearchContext(params: any): Observable<ResearchContextResponse> {
+    return this.http.post<ResearchContextResponse>(this.apiURL + 'get_research_context', params);
+  }
 
-    embedContent(params: any): Observable<any> {
-        return this.http.post(this.apiURL + 'embed_context', params, {headers: this.headers});
-    }
+  createSeededSession(params: any): Observable<ResearchSessionSeedResponse> {
+    return this.http.post<ResearchSessionSeedResponse>(this.apiURL + 'sessions/seed', params);
+  }
 
+  listSessions(): Observable<ResearchChatSession[]> {
+    return this.http.get<ResearchChatSession[]>(this.apiURL + 'sessions');
+  }
 
+  getSessionDetail(sessionId: string): Observable<ResearchSessionDetail> {
+    return this.http.get<ResearchSessionDetail>(this.apiURL + 'sessions/' + sessionId);
+  }
+
+  addQuestion(sessionId: string, content: string): Observable<ResearchChatMessage> {
+    return this.http.post<ResearchChatMessage>(this.apiURL + 'sessions/' + sessionId + '/messages', { content });
+  }
+
+  embedContent(params: { context: string; session_id: string }): Observable<any> {
+    return this.http.post(this.apiURL + 'embed_context', params);
+  }
 }

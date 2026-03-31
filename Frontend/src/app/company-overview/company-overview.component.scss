@@ -6,6 +6,49 @@
   background: ui.$color-bg-page;
 }
 
+.panel-reveal {
+  opacity: 0;
+  animation: companyPanelSlide 0.75s ease forwards;
+}
+
+.panel-reveal--left {
+  animation-delay: 0.05s;
+}
+
+.panel-reveal--right {
+  animation-delay: 0.18s;
+}
+
+.section-reveal,
+.card-reveal {
+  opacity: 0;
+  animation: companyContentLift 0.7s ease forwards;
+}
+
+.section-reveal--1 {
+  animation-delay: 0.14s;
+}
+
+.section-reveal--2 {
+  animation-delay: 0.24s;
+}
+
+.section-reveal--3 {
+  animation-delay: 0.32s;
+}
+
+.card-reveal--1 {
+  animation-delay: 0.28s;
+}
+
+.card-reveal--2 {
+  animation-delay: 0.36s;
+}
+
+.card-reveal--3 {
+  animation-delay: 0.44s;
+}
+
 .left-panel {
   width: 400px;
   background: ui.$color-surface;
@@ -56,6 +99,39 @@
       color: ui.$color-text-muted;
       margin-top: 2px;
     }
+  }
+}
+
+@keyframes companyPanelSlide {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes companyContentLift {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-reveal,
+  .section-reveal,
+  .card-reveal {
+    animation: none;
+    opacity: 1;
   }
 }
 

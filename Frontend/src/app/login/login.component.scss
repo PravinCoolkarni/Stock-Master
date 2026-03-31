@@ -4,6 +4,23 @@
   @include ui.auth-page-background();
 }
 
+.login-reveal {
+  opacity: 0;
+  animation: loginLiftIn 0.7s ease forwards;
+}
+
+.login-reveal--1 {
+  animation-delay: 0.08s;
+}
+
+.login-reveal--2 {
+  animation-delay: 0.18s;
+}
+
+.login-reveal--3 {
+  animation-delay: 0.28s;
+}
+
 .auth-shell {
   padding: ui.$space-8 ui.$space-5;
 }
@@ -230,6 +247,26 @@
   gap: 6px;
   color: ui.$color-text-muted;
   font-size: 14px;
+}
+
+@keyframes loginLiftIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @include ui.breakpoint-down(991px) {

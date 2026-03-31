@@ -1,14 +1,15 @@
 export class ResearchRequest {
-    sourceType: string;
+    sourceType: string | number;
     urls: string[];
-    docs: Document;
+    docs?: Document;
     rawText: string;
+    context: string;
 
     constructor() {
         this.sourceType = '';
         this.urls = [];
-        this.docs = new Document();
         this.rawText = '';
+        this.context = '';
     }
 }
 

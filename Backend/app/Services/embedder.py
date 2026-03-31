@@ -45,15 +45,15 @@ def chunk_text(text):
     return chunks
 
 
-def store_embeddings(chunks):
+def store_embeddings(chunks, session_id: str):
     try:
         collection = _get_collection()
-        ids = [hashlib.md5(chunk.encode()).hexdigest() for chunk in chunks]
-        #metadatas = [{'session_id': session_id} for _ in chunks]
+        ids = [hashlib.md5(f"{session_id}:{index}:{chunk}".encode()).hexdigest() for index, chunk in enumerate(chunks)]
+        metadatas = [{"session_id": session_id} for _ in chunks]
         collection.add(
             documents=chunks,
             ids=ids,
-            #metadatas=metadatas
+            metadatas=metadatas
         )
         return True
     except Exception as e:
@@ -61,11 +61,11 @@ def store_embeddings(chunks):
         return False
 
 
-def query_context(query: str):
+def query_context(query: str, session_id: str):
     collection = _get_collection()
     results = collection.query(
         query_texts=[query],
         n_results=5,
-       # where={'session_id': session_id}
+        where={"session_id": session_id}
     )
     return results

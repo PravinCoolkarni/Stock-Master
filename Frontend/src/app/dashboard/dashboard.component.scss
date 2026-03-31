@@ -5,6 +5,10 @@
   min-height: 100vh;
 }
 
+.page-entrance {
+  animation: dashboardFadeIn 0.7s ease both;
+}
+
 .dashboard-content {
   padding: 40px;
 }
@@ -36,6 +40,28 @@ mat-card {
     transform: translateY(-5px);
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
   }
+}
+
+.card-reveal,
+.section-reveal {
+  opacity: 0;
+  animation: dashboardLiftIn 0.7s ease forwards;
+}
+
+.card-reveal--1 {
+  animation-delay: 0.1s;
+}
+
+.card-reveal--2 {
+  animation-delay: 0.2s;
+}
+
+.card-reveal--3 {
+  animation-delay: 0.3s;
+}
+
+.section-reveal {
+  animation-delay: 0.35s;
 }
 
 .card-image {
@@ -114,5 +140,36 @@ mat-card-title {
     font-size: 1.1rem;
     line-height: 1.6;
     color: ui.$color-text-secondary;
+  }
+}
+
+@keyframes dashboardFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dashboardLiftIn {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-entrance,
+  .card-reveal,
+  .section-reveal {
+    animation: none;
+    opacity: 1;
   }
 }

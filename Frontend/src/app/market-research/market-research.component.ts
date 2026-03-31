@@ -1,10 +1,18 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, FormControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { ResearchService } from 'src/services/research.service';
-import { ResearchRequest } from 'src/models/ResearchRequest';
-import { ContentType } from 'src/enums/contentType';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
+import {
+  ResearchService,
+} from 'src/services/research.service';
+import {
+  ResearchChatMessage,
+  ResearchChatSession,
+  ResearchContextResponse,
+} from 'src/interfaces/ResearchChat';
+import { Document, ResearchRequest } from 'src/models/ResearchRequest';
+import { ContentType } from 'src/enums/contentType';
+import { SnackbarService } from 'src/services/snackbar.service';
 import { ContentPopupComponent } from './content-popup/content-popup.component';
 
 @Component({
@@ -13,26 +21,32 @@ import { ContentPopupComponent } from './content-popup/content-popup.component';
   styleUrls: ['./market-research.component.scss']
 })
 export class MarketResearchComponent implements OnInit, OnDestroy {
-  @ViewChild('fileInput') fileInput!: ElementRef;
-  dataSourceForm: FormGroup; // Declared with definite assignment assertion
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+  dataSourceForm: FormGroup;
+  questionControl = this.fb.control('', [Validators.required, Validators.minLength(2)]);
   type: ContentType = ContentType.URL;
   subscription: Subscription = new Subscription();
   loading = false;
   isDragging = false;
+  sessions: ResearchChatSession[] = [];
+  messages: ResearchChatMessage[] = [];
+  activeSession: ResearchChatSession | null = null;
+  isCreatingNewChat = true;
+  isMobileSessionMenuOpen = false;
   readonly ContentType = ContentType;
 
   constructor(
     private fb: FormBuilder,
     private researchService: ResearchService,
-    public dialog: MatDialog
+    private snackbar: SnackbarService,
+    private dialog: MatDialog
   ) {
-    this.dataSourceForm = this.fb.group({ // Initialize form in ngOnInit
+    this.dataSourceForm = this.fb.group({
       sourceType: [ContentType.URL, Validators.required],
-      urls: this.fb.array([
-        this.createUrlFormControl()
-      ]),
+      urls: this.fb.array([this.createUrlFormControl()]),
       docs: this.fb.group({
-        file: [null], // File upload logic is separate for now
+        file: [null],
         docType: ['']
       }),
       rawText: ['']
@@ -40,61 +54,19 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription.add(this.dataSourceForm.get('sourceType')?.valueChanges.subscribe(sourceType => {
-      this.type = sourceType; // Update the type variable for template switching
-      this.updateValidatorsAndControls(sourceType);
-    }));
+    this.subscription.add(
+      this.dataSourceForm.get('sourceType')?.valueChanges.subscribe(sourceType => {
+        this.type = sourceType;
+        this.updateValidatorsAndControls(sourceType);
+      })
+    );
 
-    // Set initial state
     this.updateValidatorsAndControls(ContentType.URL);
+    this.loadSessions();
   }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
-
-  updateValidatorsAndControls(sourceType: ContentType): void {
-    const urlsArray = this.dataSourceForm.get('urls') as FormArray;
-    const docsGroup = this.dataSourceForm.get('docs') as FormGroup;
-    const rawTextControl = this.dataSourceForm.get('rawText');
-
-    urlsArray.controls.forEach(control => control.clearValidators());
-    docsGroup.get('docType')?.clearValidators();
-    docsGroup.get('file')?.clearValidators();
-    rawTextControl!.clearValidators();
-
-    if (sourceType === ContentType.URL) {
-      urlsArray.enable();
-      urlsArray.controls.forEach(control => control.setValidators([Validators.required, this.urlValidator]));
-      docsGroup.disable();
-      docsGroup.get('docType')?.clearValidators();
-      docsGroup.get('file')?.clearValidators();
-      rawTextControl!.disable();
-      rawTextControl!.clearValidators();
-    } else if (sourceType === ContentType.Docs) {
-      urlsArray.disable();
-      urlsArray.controls.forEach(control => control.clearValidators());
-      docsGroup.enable();
-      docsGroup.get('docType')?.setValidators(Validators.required);
-      docsGroup.get('file')?.setValidators(Validators.required);
-      rawTextControl!.disable();
-      rawTextControl!.clearValidators();
-    } else if (sourceType === ContentType.RawText) {
-      urlsArray.disable();
-      urlsArray.controls.forEach(control => control.clearValidators());
-      docsGroup.disable();
-      docsGroup.get('docType')?.clearValidators();
-      docsGroup.get('file')?.clearValidators();
-      rawTextControl!.enable();
-      rawTextControl!.setValidators([Validators.required, Validators.minLength(10)]);
-    }
-
-    // Update validity for all controls after changing validators
-    urlsArray.updateValueAndValidity();
-    docsGroup.updateValueAndValidity();
-    rawTextControl!.updateValueAndValidity();
+    this.subscription.unsubscribe();
   }
 
   get urls(): FormArray {
@@ -103,6 +75,127 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
 
   createUrlFormControl(): FormControl {
     return this.fb.control('', [Validators.required, this.urlValidator]);
+  }
+
+  updateValidatorsAndControls(sourceType: ContentType): void {
+    const urlsArray = this.urls;
+    const docsGroup = this.dataSourceForm.get('docs') as FormGroup;
+    const rawTextControl = this.dataSourceForm.get('rawText');
+
+    urlsArray.controls.forEach(control => control.clearValidators());
+    docsGroup.get('docType')?.clearValidators();
+    docsGroup.get('file')?.clearValidators();
+    rawTextControl?.clearValidators();
+
+    if (sourceType === ContentType.URL) {
+      urlsArray.enable();
+      urlsArray.controls.forEach(control => control.setValidators([Validators.required, this.urlValidator]));
+      docsGroup.disable();
+      rawTextControl?.disable();
+    } else if (sourceType === ContentType.Docs) {
+      urlsArray.disable();
+      docsGroup.enable();
+      docsGroup.get('docType')?.setValidators(Validators.required);
+      docsGroup.get('file')?.setValidators(Validators.required);
+      rawTextControl?.disable();
+    } else if (sourceType === ContentType.RawText) {
+      urlsArray.disable();
+      docsGroup.disable();
+      rawTextControl?.enable();
+      rawTextControl?.setValidators([Validators.required, Validators.minLength(10)]);
+    }
+
+    urlsArray.updateValueAndValidity();
+    docsGroup.updateValueAndValidity();
+    rawTextControl?.updateValueAndValidity();
+  }
+
+  loadSessions(sessionToSelectId?: string): void {
+    this.researchService.listSessions().subscribe({
+      next: sessions => {
+        this.sessions = sessions;
+
+        if (sessionToSelectId) {
+          const matchingSession = sessions.find(session => session.id === sessionToSelectId);
+          if (matchingSession) {
+            this.selectSession(matchingSession);
+            return;
+          }
+        }
+
+        if (this.activeSession) {
+          const refreshedSession = sessions.find(session => session.id === this.activeSession?.id);
+          if (refreshedSession) {
+            this.activeSession = refreshedSession;
+            return;
+          }
+        }
+
+        if (!sessions.length) {
+          this.startNewChat();
+        }
+      },
+      error: () => {
+        this.snackbar.error('Unable to load research sessions.');
+      }
+    });
+  }
+
+  loadSessionDetail(sessionId: string): void {
+    this.loading = true;
+    this.researchService.getSessionDetail(sessionId).subscribe({
+      next: detail => {
+        this.activeSession = detail.session;
+        this.messages = detail.messages;
+        this.isCreatingNewChat = false;
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.snackbar.error('Unable to load this research session.');
+      }
+    });
+  }
+
+  selectSession(session: ResearchChatSession): void {
+    this.questionControl.reset('');
+    this.closeMobileSessionMenu();
+    this.loadSessionDetail(session.id);
+  }
+
+  startNewChat(): void {
+    this.isCreatingNewChat = true;
+    this.activeSession = null;
+    this.messages = [];
+    this.questionControl.reset('');
+    this.closeMobileSessionMenu();
+    this.resetSourceForm();
+  }
+
+  toggleMobileSessionMenu(): void {
+    this.isMobileSessionMenuOpen = !this.isMobileSessionMenuOpen;
+  }
+
+  closeMobileSessionMenu(): void {
+    this.isMobileSessionMenuOpen = false;
+  }
+
+  resetSourceForm(): void {
+    while (this.urls.length > 1) {
+      this.urls.removeAt(this.urls.length - 1);
+    }
+    this.urls.at(0).setValue('');
+    this.dataSourceForm.reset({
+      sourceType: ContentType.URL,
+      docs: {
+        file: null,
+        docType: ''
+      },
+      rawText: ''
+    });
+    this.type = ContentType.URL;
+    this.updateValidatorsAndControls(ContentType.URL);
+    this.removeFile();
   }
 
   addUrl(): void {
@@ -116,25 +209,24 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
   }
 
   isAddUrlDisabled(): boolean {
-    // Disable adding a new URL if the last one is invalid
     return this.urls.length === 0 || this.urls.at(this.urls.length - 1).invalid;
   }
 
   urlValidator(control: FormControl): { [key: string]: boolean } | null {
     if (!control.value) {
-      return null; // Let `required` validator handle empty values
-    }
-    // Simple regex for URL validation
-    const pattern = new RegExp('^(https?://)?' + // protocol
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
-    if (pattern.test(control.value)) {
       return null;
     }
-    return { 'invalidUrl': true };
+
+    const pattern = new RegExp(
+      '^(https?://)?' +
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' +
+      '((\\d{1,3}\\.){3}\\d{1,3}))' +
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' +
+      '(\\?[;&a-z\\d%_.~+=-]*)?' +
+      '(\\#[-a-z\\d_]*)?$',
+      'i'
+    );
+    return pattern.test(control.value) ? null : { invalidUrl: true };
   }
 
   onFileSelected(event: Event): void {
@@ -142,56 +234,58 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
     const fileControl = this.dataSourceForm.get('docs.file');
     const docTypeControl = this.dataSourceForm.get('docs.docType');
 
-    if (target.files && target.files.length) {
-      const file = target.files[0];
-      const fileExtension = file.name.split('.').pop()?.toLowerCase() ?? '';
-      let docType = '';
-
-      switch (fileExtension) {
-        case 'pdf':
-          docType = 'pdf';
-          break;
-        case 'doc':
-        case 'docx':
-          docType = 'word';
-          break;
-        case 'xls':
-        case 'xlsx':
-          docType = 'excel';
-          break;
-        default:
-          this.removeFile();
-          fileControl?.setErrors({ 'invalidFileType': true });
-          fileControl?.markAsTouched();
-          return;
-      }
-
-      fileControl?.setValue(file);
-      fileControl?.markAsTouched();
-      fileControl?.setErrors(null);
-      docTypeControl?.setValue(docType);
-      docTypeControl?.disable();
+    if (!target.files?.length) {
+      return;
     }
+
+    const file = target.files[0];
+    const fileExtension = file.name.split('.').pop()?.toLowerCase() ?? '';
+    let docType = '';
+
+    switch (fileExtension) {
+      case 'pdf':
+        docType = 'pdf';
+        break;
+      case 'doc':
+      case 'docx':
+        docType = 'word';
+        break;
+      case 'xls':
+      case 'xlsx':
+        docType = 'excel';
+        break;
+      default:
+        this.removeFile();
+        fileControl?.setErrors({ invalidFileType: true });
+        fileControl?.markAsTouched();
+        return;
+    }
+
+    fileControl?.setValue(file);
+    fileControl?.markAsTouched();
+    fileControl?.setErrors(null);
+    docTypeControl?.setValue(docType);
+    docTypeControl?.disable();
   }
 
-  handleDragOver(event: DragEvent) {
+  handleDragOver(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
     this.isDragging = true;
   }
 
-  handleDragLeave(event: DragEvent) {
+  handleDragLeave(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
     this.isDragging = false;
   }
 
-  handleDrop(event: DragEvent) {
+  handleDrop(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
     this.isDragging = false;
     const files = event.dataTransfer?.files;
-    if (files && files.length > 0) {
+    if (files?.length) {
       const target = { files } as HTMLInputElement;
       this.onFileSelected({ target } as unknown as Event);
       if (this.fileInput) {
@@ -219,94 +313,147 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
     });
   }
 
-  onSubmit(): void {
-    this.loading = true;
-    if (!this.dataSourceForm.valid) {
-      console.log('Form is invalid');
+  async submitNewChat(): Promise<void> {
+    if (this.dataSourceForm.invalid) {
       this.dataSourceForm.markAllAsTouched();
-      this.loading = false;
       return;
     }
 
-    const formData = this.dataSourceForm.value;
+    this.loading = true;
+
+    try {
+      const request = await this.buildResearchRequest();
+      this.researchService.getResearchContext(request).subscribe({
+        next: response => {
+          this.loading = false;
+          this.openReviewedContextDialog(request, response);
+        },
+        error: () => {
+          this.loading = false;
+          this.snackbar.error('Unable to extract context from the selected source.');
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      this.loading = false;
+      this.snackbar.error('Unable to prepare the selected source.');
+    }
+  }
+
+  openReviewedContextDialog(request: ResearchRequest, response: ResearchContextResponse): void {
+    const extractedContext = response.context?.trim();
+    if (!extractedContext) {
+      this.snackbar.error('No reviewable context was extracted from the selected source.');
+      return;
+    }
+
+    const dialogRef = this.dialog.open(ContentPopupComponent, {
+      width: 'min(960px, 92vw)',
+      maxWidth: '92vw',
+      data: extractedContext,
+      disableClose: true
+    });
+
+    this.subscription.add(
+      dialogRef.afterClosed().subscribe(reviewedContext => {
+        if (typeof reviewedContext !== 'string') {
+          return;
+        }
+
+        const trimmedContext = reviewedContext.trim();
+        if (!trimmedContext) {
+          this.snackbar.error('Reviewed context cannot be empty.');
+          return;
+        }
+
+        request.context = trimmedContext;
+        this.createReviewedSession(request);
+      })
+    );
+  }
+
+  createReviewedSession(request: ResearchRequest): void {
+    this.loading = true;
+    this.researchService.createSeededSession(request).subscribe({
+      next: response => {
+        this.loading = false;
+        this.snackbar.success('Research session created. You can now ask questions in this chat.');
+        this.loadSessions(response.session.id);
+      },
+      error: () => {
+        this.loading = false;
+        this.snackbar.error('Unable to create and seed a new research session.');
+      }
+    });
+  }
+
+  async buildResearchRequest(): Promise<ResearchRequest> {
+    const formData = this.dataSourceForm.getRawValue();
     const researchRequest = new ResearchRequest();
     researchRequest.sourceType = formData.sourceType;
 
     switch (formData.sourceType) {
       case ContentType.URL:
         researchRequest.urls = formData.urls || [];
-        this.callResearchService(researchRequest);
         break;
-      case ContentType.Docs:
+      case ContentType.Docs: {
         const file = formData.docs.file;
-        if (file) {
-          this.getBase64(file).then(base64 => {
-            const base64String = base64 as string;
-            researchRequest.docs.docName = file.name;
-            researchRequest.docs.docData = base64String.split(',')[1]; // Remove the data URL prefix
-            researchRequest.docs.docType = file.name.split('.').pop()?.toLowerCase() || '';
-            this.callResearchService(researchRequest);
-          }).catch(error => {
-            console.error('Error converting file to Base64:', error);
-            this.loading = false;
-          });
+        if (!file) {
+          throw new Error('No document selected.');
         }
+        const base64 = await this.getBase64(file);
+        const base64String = base64 as string;
+        researchRequest.docs = new Document();
+        researchRequest.docs.docName = file.name;
+        researchRequest.docs.docData = base64String.split(',')[1];
+        researchRequest.docs.docType = file.name.split('.').pop()?.toLowerCase() || '';
         break;
+      }
       case ContentType.RawText:
         researchRequest.rawText = formData.rawText || '';
-        this.callResearchService(researchRequest);
         break;
       default:
-        console.error('Invalid source type selected');
-        this.loading = false;
-        return;
+        throw new Error('Unsupported source type.');
     }
+
+    return researchRequest;
   }
 
-  private callResearchService(researchRequest: ResearchRequest) {
-    this.researchService.getResearchContext(researchRequest).subscribe({
-      next: (response) => {
+  submitQuestion(): void {
+    const content = this.questionControl.value?.trim();
+    if (!this.activeSession || !content || this.questionControl.invalid) {
+      this.questionControl.markAsTouched();
+      return;
+    }
+
+    this.loading = true;
+    this.researchService.addQuestion(this.activeSession.id, content).subscribe({
+      next: message => {
+        this.messages = [...this.messages, message];
+        this.questionControl.reset('');
         this.loading = false;
-        console.log('Research data received:', response);
-        this.openDialog(response.context.toString());
-        // Handle the response as needed
+        this.loadSessions(this.activeSession?.id);
       },
-      error: (e) => {
-        console.error('Error fetching research data:', e);
+      error: () => {
         this.loading = false;
+        this.snackbar.error('Unable to save your question for this session.');
       }
     });
   }
 
-  trackByFn(index: any, item: any): number {
+  trackByIndex(index: number): number {
     return index;
   }
 
-  openDialog(data: any) {
-    const dialogRef = this.dialog.open(ContentPopupComponent, {
-      width: '80vw',
-      maxWidth: '90vw',
-      maxHeight: '90vh',
-      data: data,
-    });
+  trackBySession(_: number, session: ResearchChatSession): string {
+    return session.id;
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.loading = true;
-        const params = {
-          context: result
-        }
-        this.researchService.embedContent(params).subscribe({
-          next: (response) => {
-            this.loading = false;
-            alert('Content embedded successfully!');
-            console.log('Content embedded successfully:', response);
-          }, error: (e) => {
-            console.error('Error embedding content:', e);
-            this.loading = false;
-          }
-        });
-      }
-    });
+  trackByMessage(_: number, message: ResearchChatMessage): number {
+    return message.id;
+  }
+
+  formatSessionDate(value: string): string {
+    return new Date(value).toLocaleString();
   }
 }

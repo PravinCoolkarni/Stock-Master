@@ -1,13 +1,22 @@
-<h1 mat-dialog-title>Verify the Extracted Context</h1>
+<h1 mat-dialog-title>Review Extracted Context</h1>
 <mat-dialog-content class="mat-typography">
+    <p class="popup-copy">
+        Review the extracted content before creating the session. You can edit it if needed.
+    </p>
     <mat-form-field appearance="outline" class="textfield">
         <mat-label>Extracted Context</mat-label>
-        <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="15" cdkAutosizeMaxRows="25"
-           [value]="data"></textarea>
-        <mat-error *ngIf="!data || data.length === 0">Extracted context cannot be empty.</mat-error>
+        <textarea
+            matInput
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="15"
+            cdkAutosizeMaxRows="25"
+            [formControl]="contextControl"
+        ></textarea>
+        <mat-error *ngIf="contextControl.hasError('required')">Extracted context cannot be empty.</mat-error>
+        <mat-error *ngIf="contextControl.hasError('minlength')">Please keep at least 10 characters.</mat-error>
     </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
     <button mat-button class="action-button" mat-dialog-close>Cancel</button>   
-    <button mat-raised-button class="action-button" color="primary" [disabled]="!data || data.length === 0" [mat-dialog-close]="data" cdkFocusInitial>Submit</button>
+    <button mat-raised-button class="action-button" color="primary" [disabled]="contextControl.invalid" (click)="onSubmit()" cdkFocusInitial>Create session</button>
 </mat-dialog-actions>

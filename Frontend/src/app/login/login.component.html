@@ -1,10 +1,10 @@
-<div class="auth-page" @fadeSlideIn>
+<div class="auth-page">
   <div class="container-fluid auth-shell">
     <div class="row justify-content-center align-items-center min-vh-100 g-4">
       <div class="col-12 col-xl-10">
         <div class="row g-4 align-items-stretch">
           <div class="col-lg-5 d-none d-lg-block">
-            <section class="auth-side-panel anim-item h-100">
+            <section class="auth-side-panel login-reveal login-reveal--1 h-100">
               <div class="brand-badge">
                 <mat-icon>trending_up</mat-icon>
                 <span>Stock Master</span>
@@ -38,7 +38,7 @@
           </div>
 
           <div class="col-12 col-lg-7 col-xl-6">
-            <mat-card class="auth-card anim-item">
+            <mat-card class="auth-card login-reveal login-reveal--2">
               <mat-card-content>
                 <div class="auth-header">
                   <div class="mobile-brand d-lg-none">
@@ -56,7 +56,7 @@
                 </div>
 
                 <button
-                  class="btn btn-light google-btn w-100 anim-item"
+                  class="btn btn-light google-btn w-100 login-reveal login-reveal--3"
                   type="button"
                   matRipple
                   (click)="loginWithGoogle()"
@@ -102,8 +102,7 @@
 
                     <div class="col-12">
                       <button class="submit-btn w-100" type="submit" [disabled]="loading" matRipple>
-                        <app-loader *ngIf="loading" [isLoading]="loading" variant="button"></app-loader>
-                        <span *ngIf="!loading">Sign In</span>
+                        <span>Sign In</span>
                       </button>
                     </div>
                   </div>
@@ -120,4 +119,5 @@
       </div>
     </div>
   </div>
+  <app-loader [isLoading]="loading" variant="fullscreen" message="Signing you in..."></app-loader>
 </div>

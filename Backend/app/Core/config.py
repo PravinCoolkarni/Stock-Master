@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change-me-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 10080
 
     # Google OAuth2
     GOOGLE_CLIENT_ID: str = "558427169397-e04u8lmi59u38fafmsck0ic6t12d6rjg.apps.googleusercontent.com"

@@ -3,23 +3,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthenticationService } from 'src/services/authetication.service';
 import { SnackbarService } from 'src/services/snackbar.service';
-import { trigger, style, animate, transition, stagger, query } from '@angular/animations';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  animations: [
-    trigger('fadeSlideIn', [
-      transition(':enter', [
-        query('.anim-item', [
-          style({ opacity: 0, transform: 'translateY(24px)' }),
-          stagger(80, [animate('500ms cubic-bezier(0.35,0,0.25,1)',
-            style({ opacity: 1, transform: 'translateY(0)' }))])
-        ], { optional: true })
-      ])
-    ])
-  ]
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
 
