@@ -6,6 +6,7 @@ import {
   ResearchChatMessage,
   ResearchChatSession,
   ResearchContextResponse,
+  ResearchQuestionResponse,
   ResearchSessionDetail,
   ResearchSessionSeedResponse,
 } from 'src/interfaces/ResearchChat';
@@ -34,8 +35,8 @@ export class ResearchService {
     return this.http.get<ResearchSessionDetail>(this.apiURL + 'sessions/' + sessionId);
   }
 
-  addQuestion(sessionId: string, content: string): Observable<ResearchChatMessage> {
-    return this.http.post<ResearchChatMessage>(this.apiURL + 'sessions/' + sessionId + '/messages', { content });
+  addQuestion(sessionId: string, content: string): Observable<ResearchQuestionResponse> {
+    return this.http.post<ResearchQuestionResponse>(this.apiURL + 'sessions/' + sessionId + '/messages', { content });
   }
 
   embedContent(params: { context: string; session_id: string }): Observable<any> {

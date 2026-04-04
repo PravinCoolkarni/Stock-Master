@@ -6,20 +6,29 @@ load_dotenv()
 
 class Settings(BaseSettings):
     # JWT
-    SECRET_KEY: str = "change-me-in-production"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = 10080
+    SECRET_KEY: str = ""
+    ALGORITHM: str = ""
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 0
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 0
 
     # Google OAuth2
-    GOOGLE_CLIENT_ID: str = "558427169397-e04u8lmi59u38fafmsck0ic6t12d6rjg.apps.googleusercontent.com"
-    GOOGLE_CLIENT_SECRET: str = "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"
-    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/auth/google/callback"
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = ""
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = ""
+    GEMINI_SYSTEM_INSTRUCTION: str = (
+        "You are a market research assistant. Use the retrieved context as the primary grounding source. "
+        "Use prior chat history only as supporting conversational context. If the retrieved context is insufficient, "
+        "say so clearly. Do not provide responses that are outside the retrieved context or outside the current topic. "
+        "If the user asks something off-topic or unsupported by the retrieved context, politely say that you can only "
+        "answer based on the current research context. Give direct, concise, helpful answers."
+    )
 
     # DB
-    DATABASE_URL: str = "sqlite+aiosqlite:///./app.db"
+    DATABASE_URL: str = ""
 
-    FRONTEND_GOOGLE_CALLBACK: str = "http://localhost:4200/auth/google/callback"
+    FRONTEND_GOOGLE_CALLBACK: str = ""
 
     class Config:
         model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")

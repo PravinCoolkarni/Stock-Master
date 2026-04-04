@@ -21,6 +21,10 @@
   .nav-list-horizontal {
     display: flex;
     gap: 10px;
+
+    &--auth {
+      gap: 0;
+    }
   }
 
   .spacer {

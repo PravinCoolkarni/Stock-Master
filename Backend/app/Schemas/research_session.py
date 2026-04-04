@@ -26,6 +26,12 @@ class ResearchMessageOut(pydantic.BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ResearchQuestionResponse(pydantic.BaseModel):
+    user_message: ResearchMessageOut
+    assistant_message: ResearchMessageOut
+    retrieved_chunks: list[str] = pydantic.Field(default_factory=list)
+
+
 class ResearchSessionDetail(pydantic.BaseModel):
     session: ResearchSessionSummary
     messages: list[ResearchMessageOut]

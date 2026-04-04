@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { StockData } from 'src/interfaces/StockData';
 import { Company } from 'src/interfaces/Company';
+import { CompanyOverview } from 'src/interfaces/CompanyOverview';
 import { GeminiService } from 'src/services/gemini.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { GeminiService } from 'src/services/gemini.service';
 export class StockDashboardComponent implements OnChanges {
   @Input() stockData: StockData[] = [];
   @Input() selectedCompany: Company | null = null;
+  @Input() companyOverview: CompanyOverview | null = null;
   @Input() loading: boolean = false;
 
   recentPrices: StockData[] = [];
@@ -48,8 +50,31 @@ export class StockDashboardComponent implements OnChanges {
     return this.stockData.length > 0 ? parseFloat(this.stockData[0].close) : 0;
   }
 
-  getFormattedPrice(price: string): string {
-    return parseFloat(price).toFixed(2);
+  getCurrencyCode(): string {
+    return this.companyOverview?.currency || 'USD';
+  }
+
+  getFormattedPrice(price: string | number): string {
+    const numericPrice = typeof price === 'number' ? price : parseFloat(price);
+    if (Number.isNaN(numericPrice)) {
+      return String(price);
+    }
+
+    try {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: this.getCurrencyCode(),
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 2,
+      }).format(numericPrice);
+    } catch {
+      return `${this.getCurrencyCode()} ${numericPrice.toFixed(2)}`;
+    }
+  }
+
+  getFormattedPriceChange(): string {
+    const absoluteChange = Math.abs(this.priceChange);
+    return this.getFormattedPrice(absoluteChange);
   }
 
   getFormattedVolume(volume: string): string {

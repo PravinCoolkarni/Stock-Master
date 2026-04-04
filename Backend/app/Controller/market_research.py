@@ -13,6 +13,7 @@ from app.Enum.content_type import ContentType
 from app.Services.embedder import chunk_text as chunk_text_service
 from app.Services.embedder import store_embeddings as store_embeddings_service
 from app.Services.embedder import query_context as query_context_service
+from app.Services.gemini import generate_answer as generate_answer_service
 from app.Schemas.embed_context_request import EmbedContextRequest
 from app.Core.dependencies import get_current_user
 from app.DB.database import get_db
@@ -21,6 +22,7 @@ from app.Model.research_session import ResearchSession
 from app.Model.user import User
 from app.Schemas.research_session import (
     ResearchMessageOut,
+    ResearchQuestionResponse,
     ResearchQuestionCreate,
     ResearchSessionDetail,
     ResearchSessionSeedResponse,
@@ -83,6 +85,15 @@ def _build_source_summary(request: ResearchRequest) -> str:
     if request.sourceType == ContentType.RAW_TEXT:
         return request.rawText[:120]
     return "New source"
+
+
+def _extract_retrieved_chunks(results: dict) -> list[str]:
+    documents = results.get("documents") if isinstance(results, dict) else None
+    if not documents:
+        return []
+
+    first_batch = documents[0] if documents and isinstance(documents[0], list) else documents
+    return [chunk.strip() for chunk in first_batch if isinstance(chunk, str) and chunk.strip()]
 
 
 @router.post("/get_research_context", dependencies=[Depends(get_current_user)])
@@ -160,7 +171,7 @@ async def create_seeded_session(
     return ResearchSessionSeedResponse(session=session)
 
 
-@router.post("/sessions/{session_id}/messages", response_model=ResearchMessageOut)
+@router.post("/sessions/{session_id}/messages", response_model=ResearchQuestionResponse)
 async def create_message(
     session_id: str,
     request: ResearchQuestionCreate,
@@ -177,18 +188,50 @@ async def create_message(
     if not session:
         raise HTTPException(status_code=404, detail="Research session not found.")
 
-    message = ResearchMessage(
+    history_result = await db.execute(
+        select(ResearchMessage)
+        .where(ResearchMessage.session_id == session_id, ResearchMessage.user_id == current_user.id)
+        .order_by(ResearchMessage.created_at.asc())
+    )
+    existing_messages = list(history_result.scalars().all())
+
+    user_message = ResearchMessage(
         session_id=session.id,
         user_id=current_user.id,
         role=MessageRole.user,
         content=request.content,
     )
-    db.add(message)
-    session.message_count += 1
+    db.add(user_message)
+    await db.flush()
+
+    retrieval_results = query_context_service(request.content, session.id)
+    retrieved_chunks = _extract_retrieved_chunks(retrieval_results)
+    chat_history = [(message.role.value, message.content) for message in existing_messages]
+
+    try:
+        answer = await generate_answer_service(request.content, retrieved_chunks, chat_history)
+    except ValueError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail="Could not get a response from Gemini.") from exc
+
+    assistant_message = ResearchMessage(
+        session_id=session.id,
+        user_id=current_user.id,
+        role=MessageRole.assistant,
+        content=answer,
+    )
+    db.add(assistant_message)
+    session.message_count += 2
     session.updated_at = datetime.now(timezone.utc)
     await db.commit()
-    await db.refresh(message)
-    return message
+    await db.refresh(user_message)
+    await db.refresh(assistant_message)
+    return ResearchQuestionResponse(
+        user_message=user_message,
+        assistant_message=assistant_message,
+        retrieved_chunks=retrieved_chunks,
+    )
 
 
 @router.post("/embed_context", dependencies=[Depends(get_current_user)])

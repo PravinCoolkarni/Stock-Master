@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Company } from 'src/interfaces/Company';
-import { StockApiResponse, StockData } from 'src/interfaces/StockData';
+import { StockData } from 'src/interfaces/StockData';
 import { CompanyOverview } from 'src/interfaces/CompanyOverview';
-import { Observable, observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environment/environment';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -15,39 +15,21 @@ export class DataExtractorService {
     private http: HttpClient,
   ) { }
 
-  getCompany(companyName : string): Observable<any>{
-    return this.http.get<Company[]>(environment.apiURL + 'query?function=SYMBOL_SEARCH&keywords=' + companyName + '&apikey=' + environment.apiKey);
-  } 
+  getCompany(companyName : string): Observable<{ company_name: string; tickers: Company[] }>{
+    return this.http.get<{ company_name: string; tickers: Company[] }>(
+      `${environment.FastAPIURL}company/get_ticker/${encodeURIComponent(companyName)}`
+    );
+  }
 
   getStockData(symbol: string, outputSize: string = 'compact'): Observable<StockData[]> {
-    return this.http.get<StockApiResponse>(
-      `${environment.apiURL}query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=${outputSize}&apikey=${environment.apiKey}`
-    ).pipe(
-      map(response => {
-        const timeSeries = response['Time Series (Daily)'];
-        if (!timeSeries) {
-          return [];
-        }
-        
-        return Object.keys(timeSeries)
-          .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-          .slice(0, 30)
-          .map(date => ({
-            symbol: response['Meta Data']['2. Symbol'],
-            date: date,
-            open: timeSeries[date]['1. open'],
-            high: timeSeries[date]['2. high'],
-            low: timeSeries[date]['3. low'],
-            close: timeSeries[date]['4. close'],
-            volume: timeSeries[date]['5. volume']
-          }));
-      })
+    return this.http.get<StockData[]>(
+      `${environment.FastAPIURL}company/stock/${encodeURIComponent(symbol)}?output_size=${encodeURIComponent(outputSize)}`
     );
   }
 
   getCompanyOverview(symbol: string): Observable<CompanyOverview> {
     return this.http.get<CompanyOverview>(
-      `${environment.apiURL}query?function=OVERVIEW&symbol=${symbol}&apikey=${environment.apiKey}`
+      `${environment.FastAPIURL}company/overview/${encodeURIComponent(symbol)}`
     );
-  } 
+  }
 }

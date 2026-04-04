@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormGroupDirective, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import {
@@ -9,6 +9,7 @@ import {
   ResearchChatMessage,
   ResearchChatSession,
   ResearchContextResponse,
+  ResearchQuestionResponse,
 } from 'src/interfaces/ResearchChat';
 import { Document, ResearchRequest } from 'src/models/ResearchRequest';
 import { ContentType } from 'src/enums/contentType';
@@ -22,12 +23,15 @@ import { ContentPopupComponent } from './content-popup/content-popup.component';
 })
 export class MarketResearchComponent implements OnInit, OnDestroy {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('questionFormDirective') questionFormDirective?: FormGroupDirective;
+  @ViewChild('messageList') messageList?: ElementRef<HTMLDivElement>;
 
   dataSourceForm: FormGroup;
-  questionControl = this.fb.control('', [Validators.required, Validators.minLength(2)]);
+  questionForm: FormGroup;
   type: ContentType = ContentType.URL;
   subscription: Subscription = new Subscription();
   loading = false;
+  isSubmittingQuestion = false;
   isDragging = false;
   sessions: ResearchChatSession[] = [];
   messages: ResearchChatMessage[] = [];
@@ -51,6 +55,10 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
       }),
       rawText: ['']
     });
+
+    this.questionForm = this.fb.group({
+      content: ['', [Validators.required, Validators.minLength(2)]]
+    });
   }
 
   ngOnInit(): void {
@@ -71,6 +79,10 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
 
   get urls(): FormArray {
     return this.dataSourceForm.get('urls') as FormArray;
+  }
+
+  get questionControl(): FormControl {
+    return this.questionForm.get('content') as FormControl;
   }
 
   createUrlFormControl(): FormControl {
@@ -149,6 +161,7 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
         this.messages = detail.messages;
         this.isCreatingNewChat = false;
         this.loading = false;
+        this.scrollMessagesToBottom();
       },
       error: () => {
         this.loading = false;
@@ -158,7 +171,8 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
   }
 
   selectSession(session: ResearchChatSession): void {
-    this.questionControl.reset('');
+    this.questionFormDirective?.resetForm({ content: '' });
+    this.questionForm.reset({ content: '' });
     this.closeMobileSessionMenu();
     this.loadSessionDetail(session.id);
   }
@@ -167,7 +181,8 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
     this.isCreatingNewChat = true;
     this.activeSession = null;
     this.messages = [];
-    this.questionControl.reset('');
+    this.questionFormDirective?.resetForm({ content: '' });
+    this.questionForm.reset({ content: '' });
     this.closeMobileSessionMenu();
     this.resetSourceForm();
   }
@@ -427,16 +442,30 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
     }
 
     this.loading = true;
+    this.isSubmittingQuestion = true;
     this.researchService.addQuestion(this.activeSession.id, content).subscribe({
-      next: message => {
-        this.messages = [...this.messages, message];
-        this.questionControl.reset('');
+      next: (response: ResearchQuestionResponse) => {
+        this.messages = [...this.messages, response.user_message, response.assistant_message];
+        this.questionFormDirective?.resetForm({ content: '' });
+        this.questionForm.reset({ content: '' });
+        if (this.activeSession) {
+          this.activeSession = {
+            ...this.activeSession,
+            message_count: this.activeSession.message_count + 2,
+            updated_at: response.assistant_message.created_at
+          };
+          this.sessions = this.sessions.map(session =>
+            session.id === this.activeSession?.id ? this.activeSession! : session
+          );
+        }
         this.loading = false;
-        this.loadSessions(this.activeSession?.id);
+        this.isSubmittingQuestion = false;
+        this.scrollMessagesToBottom();
       },
       error: () => {
         this.loading = false;
-        this.snackbar.error('Unable to save your question for this session.');
+        this.isSubmittingQuestion = false;
+        this.snackbar.error('Unable to process your question for this session.');
       }
     });
   }
@@ -455,5 +484,16 @@ export class MarketResearchComponent implements OnInit, OnDestroy {
 
   formatSessionDate(value: string): string {
     return new Date(value).toLocaleString();
+  }
+
+  private scrollMessagesToBottom(): void {
+    setTimeout(() => {
+      if (!this.messageList?.nativeElement) {
+        return;
+      }
+
+      const container = this.messageList.nativeElement;
+      container.scrollTop = container.scrollHeight;
+    });
   }
 }

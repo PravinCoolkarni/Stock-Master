@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { filter, map, startWith } from 'rxjs/operators';
 import { AuthenticationService, UserOut } from 'src/services/authetication.service';
 
 @Component({
@@ -10,6 +12,7 @@ import { AuthenticationService, UserOut } from 'src/services/authetication.servi
 export class HeaderComponent {
   @Output() toggleSidenav = new EventEmitter<void>();
   currentUser$: Observable<UserOut | null>;
+  isAuthRoute$: Observable<boolean>;
 
   navigationItems = [
     { label: 'Company Overview', route: '/company-overview', icon: 'business' },
@@ -18,8 +21,13 @@ export class HeaderComponent {
     // { label: 'News & Insights', route: '/news', icon: 'article' }
   ];
 
-  constructor(private authService: AuthenticationService) {
+  constructor(private authService: AuthenticationService, private router: Router) {
     this.currentUser$ = this.authService.currentUser$;
+    this.isAuthRoute$ = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      startWith(null),
+      map(() => this.router.url.startsWith('/auth'))
+    );
   }
 
   logout(): void {

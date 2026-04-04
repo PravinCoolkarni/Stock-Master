@@ -15,6 +15,7 @@ import { MatSelectModule }  from '@angular/material/select';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -32,7 +33,8 @@ export const MATERIAL_MODULES = [
   MatSelectModule,
   MatMenuModule,
   MatDialogModule,
-  MatSnackBarModule
+  MatSnackBarModule,
+  MatTooltipModule
 ];
 @NgModule({
   exports: [

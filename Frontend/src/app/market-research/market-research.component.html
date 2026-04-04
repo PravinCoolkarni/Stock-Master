@@ -62,7 +62,7 @@
           <strong class="session-item__title" [title]="session.title">{{ session.title }}</strong>
           <span class="session-item__summary" [title]="session.source_summary">{{ session.source_summary }}</span>
           <div class="session-item__meta">
-            <small>{{ session.message_count }} question{{ session.message_count === 1 ? '' : 's' }}</small>
+            <small>{{ session.message_count }} message{{ session.message_count === 1 ? '' : 's' }}</small>
             <small>{{ formatSessionDate(session.updated_at) }}</small>
           </div>
         </div>
@@ -227,42 +227,71 @@
     <ng-template #existingChat>
       <div class="workspace-panel__header section-reveal section-reveal--1" *ngIf="activeSession as session">
         <p class="eyebrow">Existing session</p>
-        <h1>{{ session.title }}</h1>
-        <p class="workspace-copy">{{ session.source_summary }}</p>
-        <span class="session-meta">Updated {{ formatSessionDate(session.updated_at) }}</span>
+        <h1>
+          <span
+            class="session-title-tooltip-trigger"
+            [matTooltip]="'Source: ' + session.source_summary + '\nUpdated: ' + formatSessionDate(session.updated_at)"
+            matTooltipClass="session-title-tooltip"
+            matTooltipPosition="below"
+          >
+            {{ session.title }}
+          </span>
+        </h1>
       </div>
 
       <div class="chat-shell section-reveal section-reveal--2" *ngIf="activeSession as session">
-        <div class="message-list" *ngIf="messages.length; else noMessagesYet">
-          <div class="message-bubble" *ngFor="let message of messages; trackBy: trackByMessage" [class.message-bubble--user]="message.role === 'user'">
+        <!-- <div class="chat-shell__intro">
+          <div class="chat-shell__intro-copy">
+            <span class="chat-shell__label">Questions and answers</span>
+            <p>Ask about the embedded source and review Gemini's answer grounded in the retrieved session context.</p>
+          </div>
+        </div> -->
+
+        <div #messageList class="message-list" *ngIf="messages.length; else noMessagesYet">
+          <div
+            class="message-bubble"
+            *ngFor="let message of messages; trackBy: trackByMessage"
+            [class.message-bubble--user]="message.role === 'user'"
+            [class.message-bubble--assistant]="message.role === 'assistant'"
+          >
             <div class="message-bubble__meta">
-              <span>{{ message.role === 'user' ? 'You' : 'Assistant' }}</span>
+              <span class="message-bubble__role">{{ message.role === 'user' ? 'Question' : 'Answer' }}</span>
               <small>{{ formatSessionDate(message.created_at) }}</small>
             </div>
-            <p>{{ message.content }}</p>
+            <p class="message-bubble__content">{{ message.content }}</p>
           </div>
         </div>
 
         <ng-template #noMessagesYet>
           <div class="empty-chat">
             <mat-icon>question_answer</mat-icon>
-            <h3>Session ready for questions</h3>
-            <p>The source context has already been embedded for this session. Ask the first question below.</p>
+            <h3>Session ready for Q&amp;A</h3>
+            <p>The source context is embedded and ready. Ask the first question below to get a grounded answer.</p>
           </div>
         </ng-template>
 
-        <form class="chat-composer" (ngSubmit)="submitQuestion()">
+        <form class="chat-composer" [formGroup]="questionForm" (ngSubmit)="submitQuestion()" #questionFormDirective="ngForm">
           <mat-form-field appearance="outline" class="composer-field">
             <mat-label>Ask a question about this session</mat-label>
-            <textarea matInput [formControl]="questionControl" cdkTextareaAutosize cdkAutosizeMinRows="2" cdkAutosizeMaxRows="5"></textarea>
-            <mat-error *ngIf="questionControl.hasError('required')">Question is required.</mat-error>
-            <mat-error *ngIf="questionControl.hasError('minlength')">Please enter at least 2 characters.</mat-error>
+            <textarea
+              matInput
+              formControlName="content"
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="1"
+              cdkAutosizeMaxRows="3"
+            ></textarea>
+            <mat-error *ngIf="questionControl.hasError('required') && (questionControl.touched || questionControl.dirty)">
+              Question is required.
+            </mat-error>
+            <mat-error *ngIf="questionControl.hasError('minlength') && (questionControl.touched || questionControl.dirty)">
+              Please enter at least 2 characters.
+            </mat-error>
           </mat-form-field>
 
           <div class="composer-actions">
             <button mat-raised-button color="primary" type="submit" [disabled]="questionControl.invalid || loading">
               <mat-icon>send</mat-icon>
-              <span>Save question</span>
+              <span>{{ isSubmittingQuestion ? 'Generating answer...' : 'Ask question' }}</span>
             </button>
           </div>
         </form>

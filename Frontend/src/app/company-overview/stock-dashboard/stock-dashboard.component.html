@@ -12,10 +12,10 @@
       </mat-card-header>
       <mat-card-content>
         <div class="current-price">
-          <span class="price">${{getCurrentPrice() | number:'1.2-2'}}</span>
+          <span class="price">{{ getFormattedPrice(getCurrentPrice()) }}</span>
           <div class="price-change" [ngClass]="{'positive': priceChange >= 0, 'negative': priceChange < 0}">
             <mat-icon>{{priceChange >= 0 ? 'trending_up' : 'trending_down'}}</mat-icon>
-            <span>${{priceChange | number:'1.2-2'}} ({{priceChangePercent | number:'1.2-2'}}%)</span>
+            <span>{{ getFormattedPriceChange() }} ({{priceChangePercent | number:'1.2-2'}}%)</span>
           </div>
         </div>
       </mat-card-content>
@@ -31,9 +31,9 @@
           <div class="price-item" *ngFor="let price of recentPrices">
             <div class="date">{{price.date | date:'MMM dd'}}</div>
             <div class="price-values">
-              <div class="close-price">${{getFormattedPrice(price.close)}}</div>
+              <div class="close-price">{{ getFormattedPrice(price.close) }}</div>
               <div class="price-range">
-                H: ${{getFormattedPrice(price.high)}} | L: ${{getFormattedPrice(price.low)}}
+                H: {{ getFormattedPrice(price.high) }} | L: {{ getFormattedPrice(price.low) }}
               </div>
               <div class="volume">Vol: {{getFormattedVolume(price.volume)}}</div>
             </div>
@@ -42,14 +42,14 @@
       </mat-card-content>
     </mat-card>
 
-    <!-- Gemini Prediction Card -->
+    <!-- Price Prediction Card -->
     <mat-card class="prediction-card" *ngIf="prediction">
       <mat-card-header>
-        <mat-card-title>Gemini Price Prediction</mat-card-title>
+        <mat-card-title>Price Prediction</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="prediction">
-          <span class="price">${{prediction.prediction}}</span>
+          <span class="price">{{ getFormattedPrice(prediction.prediction) }}</span>
           <div class="confidence">
             <span>Confidence: {{prediction.confidence * 100 | number:'1.0-0'}}%</span>
           </div>
@@ -71,22 +71,22 @@
 
           <ng-container matColumnDef="open">
             <mat-header-cell *matHeaderCellDef>Open</mat-header-cell>
-            <mat-cell *matCellDef="let element">${{getFormattedPrice(element.open)}}</mat-cell>
+            <mat-cell *matCellDef="let element">{{ getFormattedPrice(element.open) }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="high">
             <mat-header-cell *matHeaderCellDef>High</mat-header-cell>
-            <mat-cell *matCellDef="let element">${{getFormattedPrice(element.high)}}</mat-cell>
+            <mat-cell *matCellDef="let element">{{ getFormattedPrice(element.high) }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="low">
             <mat-header-cell *matHeaderCellDef>Low</mat-header-cell>
-            <mat-cell *matCellDef="let element">${{getFormattedPrice(element.low)}}</mat-cell>
+            <mat-cell *matCellDef="let element">{{ getFormattedPrice(element.low) }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="close">
             <mat-header-cell *matHeaderCellDef>Close</mat-header-cell>
-            <mat-cell *matCellDef="let element">${{getFormattedPrice(element.close)}}</mat-cell>
+            <mat-cell *matCellDef="let element">{{ getFormattedPrice(element.close) }}</mat-cell>
           </ng-container>
 
           <ng-container matColumnDef="volume">

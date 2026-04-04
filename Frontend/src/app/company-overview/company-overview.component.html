@@ -1,25 +1,28 @@
 <div class="company-overview-container">
-  <div class="left-panel panel-reveal panel-reveal--left">
+  <aside class="left-panel panel-reveal panel-reveal--left">
     <div class="company-selector section-reveal section-reveal--1">
-      <h3 class="selector-title">Company Search</h3>
+      <p class="selector-eyebrow">Market lookup</p>
+      <h2 class="selector-title">Find a company</h2>
       <form class="company-form" [formGroup]="companyForm">
         <mat-form-field class="company-field" appearance="outline">
-          <mat-label>Search Company</mat-label>
-          <input 
-            type="text" 
-            formControlName="companyName" 
-            matInput  
+          <mat-label>Search by company name</mat-label>
+          <input
+            type="text"
+            formControlName="companyName"
+            matInput
             [matAutocomplete]="auto"
-            placeholder="Type company name...">
+            placeholder="Start typing..."
+          />
           <mat-icon matSuffix>search</mat-icon>
-          <mat-autocomplete 
-            #auto="matAutocomplete" 
+          <mat-autocomplete
+            #auto="matAutocomplete"
             [displayWith]="displayFn"
-            (optionSelected)="onCompanySelected($event.option.value)">
+            (optionSelected)="onCompanySelected($event.option.value)"
+          >
             <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
               <div class="company-option">
-                <div class="company-name">{{option.name}}</div>
-                <div class="company-symbol">{{option.symbol}}</div>
+                <div class="company-name">{{ option.name }}</div>
+                <div class="company-symbol">{{ option.symbol }}</div>
               </div>
             </mat-option>
           </mat-autocomplete>
@@ -27,107 +30,86 @@
       </form>
     </div>
 
-    <div class="company-overview-section section-reveal section-reveal--2" *ngIf="companyOverview && selectedCompany">
-      <h3 class="overview-title">Company Overview</h3>
-      
-      <mat-card class="overview-card basic-info card-reveal card-reveal--1">
-        <mat-card-header>
-          <mat-card-title>{{companyOverview.Name}}</mat-card-title>
-          <mat-card-subtitle>{{companyOverview.Symbol}} • {{companyOverview.Exchange}}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="info-grid">
-            <div class="info-item">
-              <strong>Sector:</strong> {{getFormattedValue(companyOverview.Sector)}}
-            </div>
-            <div class="info-item">
-              <strong>Industry:</strong> {{getFormattedValue(companyOverview.Industry)}}
-            </div>
-            <div class="info-item">
-              <strong>Country:</strong> {{getFormattedValue(companyOverview.Country)}}
-            </div>
-            <div class="info-item">
-              <strong>Currency:</strong> {{getFormattedValue(companyOverview.Currency)}}
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+    <div class="company-overview-section section-reveal section-reveal--2" *ngIf="companyOverview">
+      <div class="overview-hero">
+        <p class="overview-eyebrow">Company overview</p>
+        <h1>{{ companyOverview.longName }}</h1>
+        <div class="hero-chips">
+          <span class="hero-chip">{{ companyOverview.symbol || 'N/A' }}</span>
+          <span class="hero-chip">{{ companyOverview.exchange || 'N/A' }}</span>
+        </div>
+      </div>
 
-      <mat-card class="overview-card financial-metrics card-reveal card-reveal--2">
-        <mat-card-header>
-          <mat-card-title>Financial Metrics</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="metrics-grid">
-            <div class="metric-item">
-              <span class="metric-label">Market Cap:</span>
-              <span class="metric-value">{{getFormattedCurrency(companyOverview.MarketCapitalization)}}</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-label">P/E Ratio:</span>
-              <span class="metric-value">{{getFormattedValue(companyOverview.PERatio)}}</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-label">EPS:</span>
-              <span class="metric-value">{{getFormattedValue(companyOverview.EPS)}}</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-label">Book Value:</span>
-              <span class="metric-value">{{getFormattedValue(companyOverview.BookValue)}}</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-label">Dividend Yield:</span>
-              <span class="metric-value">{{getFormattedValue(companyOverview.DividendYield)}}</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-label">52W High:</span>
-              <span class="metric-value">{{getFormattedValue(companyOverview.WeekHigh52)}}</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-label">52W Low:</span>
-              <span class="metric-value">{{getFormattedValue(companyOverview.WeekLow52)}}</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-label">Beta:</span>
-              <span class="metric-value">{{getFormattedValue(companyOverview.Beta)}}</span>
-            </div>
+      <section class="overview-group">
+        <div class="group-header">
+          <h3>Identity</h3>
+        </div>
+        <div class="field-list">
+          <div class="field-row" *ngFor="let field of identityFields">
+            <span class="field-label">{{ field.label }}</span>
+            <span class="field-value field-value--text">{{ formatField(field) }}</span>
           </div>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </section>
 
-      <mat-card class="overview-card description card-reveal card-reveal--3" *ngIf="companyOverview.Description">
-        <mat-card-header>
-          <mat-card-title>About</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p class="description-text">{{companyOverview.Description}}</p>
-        </mat-card-content>
-      </mat-card>
+      <section class="overview-group">
+        <div class="group-header">
+          <h3>Market snapshot</h3>
+        </div>
+        <div class="stat-grid">
+          <article
+            class="stat-card"
+            *ngFor="let field of featuredMarketFields; let first = first"
+            [class.stat-card--highlight]="first"
+          >
+            <span class="stat-label">{{ field.label }}</span>
+            <strong class="stat-value">{{ formatField(field) }}</strong>
+          </article>
+        </div>
+        <div class="field-list field-list--spaced">
+          <div class="field-row" *ngFor="let field of secondaryMarketFields">
+            <span class="field-label">{{ field.label }}</span>
+            <span class="field-value">{{ formatField(field) }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="overview-group">
+        <div class="group-header">
+          <h3>Business fundamentals</h3>
+        </div>
+        <div class="field-list">
+          <div class="field-row" *ngFor="let field of businessFields">
+            <span class="field-label">{{ field.label }}</span>
+            <span class="field-value">{{ formatField(field) }}</span>
+          </div>
+        </div>
+      </section>
     </div>
 
     <div class="loading-section" *ngIf="loading">
       <app-loader [isLoading]="loading" variant="inline" message="Loading company data..."></app-loader>
     </div>
-  </div>
+  </aside>
 
-  <div class="right-panel panel-reveal panel-reveal--right">
-    <app-stock-dashboard 
+  <main class="right-panel panel-reveal panel-reveal--right">
+    <app-stock-dashboard
       *ngIf="selectedCompany && stockData.length > 0"
       [selectedCompany]="selectedCompany"
+      [companyOverview]="companyOverview"
       [stockData]="stockData"
-      [loading]="loading">
-    </app-stock-dashboard>
+      [loading]="loading"
+    ></app-stock-dashboard>
 
     <div class="welcome-section section-reveal section-reveal--3" *ngIf="!selectedCompany">
-      <mat-card class="welcome-card">
-        <mat-card-header>
-          <mat-card-title>Welcome to Stock Master</mat-card-title>
-          <mat-card-subtitle>Search for a company to view its stock data and overview</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p>Use the company search on the left to select a company and view its overview and recent stock data.</p>
-        </mat-card-content>
-      </mat-card>
+      <div class="welcome-card">
+        <p class="welcome-eyebrow">Stock Master</p>
+        <h2>Search a company to open its market snapshot.</h2>
+        <p>
+          Start with the company name on the left. We&apos;ll pull the ticker, show the key company
+          details, and load the latest stock history on the right.
+        </p>
+      </div>
     </div>
-  </div>
+  </main>
 </div>

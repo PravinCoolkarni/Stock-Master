@@ -15,6 +15,12 @@ export interface ResearchChatMessage {
   created_at: string;
 }
 
+export interface ResearchQuestionResponse {
+  user_message: ResearchChatMessage;
+  assistant_message: ResearchChatMessage;
+  retrieved_chunks: string[];
+}
+
 export interface ResearchSessionDetail {
   session: ResearchChatSession;
   messages: ResearchChatMessage[];
