@@ -1,146 +1,467 @@
 @use '../../styles/index' as ui;
 
-.dashboard-container {
-  background: ui.$color-bg-page;
-  min-height: 100vh;
+.dashboard-shell {
+  min-height: calc(100vh - #{ui.$toolbar-height});
+  padding: ui.$space-5;
+  background:
+    radial-gradient(circle at top left, rgba(79, 108, 255, 0.14), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(129, 95, 192, 0.12), transparent 24%),
+    linear-gradient(180deg, #f7f9ff 0%, #edf2ff 100%);
 }
 
 .page-entrance {
   animation: dashboardFadeIn 0.7s ease both;
 }
 
-.dashboard-content {
-  padding: 40px;
-}
-
-.main-content {
-  max-width: 1200px;
+.hero,
+.workflow-grid,
+.signal-strip,
+.insight-panel {
+  max-width: 1240px;
   margin: 0 auto;
 }
 
-h2 {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: ui.$color-text-primary;
-  margin-bottom: 40px;
-}
-
-.cards-container {
+.hero {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.85fr);
+  gap: ui.$space-5;
+  align-items: stretch;
 }
 
-mat-card {
-  @include ui.card-surface(15px, 0 4px 20px rgba(0, 0, 0, 0.1));
-  transition: transform ui.$transition-medium, box-shadow ui.$transition-medium;
+.hero__copy,
+.hero__panel,
+.workflow-card,
+.signal-card,
+.insight-panel {
+  border: 1px solid rgba(96, 119, 255, 0.12);
+  box-shadow: 0 20px 42px rgba(38, 60, 130, 0.08);
+}
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+.hero__copy,
+.hero__panel,
+.insight-panel {
+  border-radius: 28px;
+}
+
+.hero__copy {
+  padding: ui.$space-6;
+  background:
+    radial-gradient(circle at top right, rgba(124, 149, 255, 0.14), transparent 28%),
+    rgba(255, 255, 255, 0.9);
+
+  h1 {
+    margin: 0 0 ui.$space-6;
+    color: ui.$color-text-primary;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+    max-width: 12ch;
   }
 }
 
-.card-reveal,
+.eyebrow,
+.workflow-card__eyebrow,
+.hero-panel__eyebrow,
+.signal-card__label {
+  display: inline-block;
+  margin: 0 0 ui.$space-4;
+  color: ui.$color-primary-500;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero__description {
+  max-width: 60ch;
+  margin: 0 0 ui.$space-6;
+  color: ui.$color-text-secondary;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: ui.$space-3;
+  margin-bottom: ui.$space-6;
+}
+
+.hero__actions a {
+  min-height: 3.2rem;
+  padding: 0 1.3rem;
+  border-radius: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 14px 28px rgba(63, 84, 177, 0.18);
+  transition:
+    transform ui.$transition-fast,
+    box-shadow ui.$transition-fast,
+    filter ui.$transition-fast;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 34px rgba(63, 84, 177, 0.24);
+    filter: saturate(1.05);
+  }
+
+  mat-icon {
+    margin-right: 0.45rem;
+  }
+}
+
+.hero__actions a[mat-raised-button] {
+  background: linear-gradient(135deg, #314a99 0%, #5570e5 52%, #7d63c4 100%);
+  color: #fff;
+}
+
+.hero__secondary {
+  border: 1px solid rgba(86, 109, 226, 0.2);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(236, 241, 255, 0.96) 50%, rgba(243, 236, 255, 0.96) 100%);
+  color: #3b4ea8;
+}
+
+.hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: ui.$space-2;
+
+  span {
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(78, 111, 255, 0.08);
+    color: ui.$color-text-secondary;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+}
+
+.hero__panel {
+  padding: ui.$space-5;
+  background:
+    linear-gradient(145deg, #314a99 0%, #5570e5 54%, #8b62b7 100%);
+  color: ui.$color-text-inverse;
+}
+
+.hero-panel__header {
+  margin-bottom: ui.$space-4;
+
+  strong {
+    display: block;
+    font-size: 1.35rem;
+    line-height: 1.2;
+  }
+}
+
+.hero-panel__eyebrow {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hero-panel__visuals {
+  display: flex;
+  flex-direction: column;
+  gap: ui.$space-3;
+  margin-bottom: ui.$space-4;
+}
+
+.hero-panel__visual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: ui.$space-3;
+}
+
+.hero-visual {
+  position: relative;
+  overflow: hidden;
+  min-height: 132px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 32%, rgba(18, 27, 61, 0.28) 100%);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.hero-visual--wide {
+  min-height: 186px;
+}
+
+.hero-panel__timeline {
+  display: flex;
+  flex-direction: column;
+  gap: ui.$space-4;
+}
+
+.timeline-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: ui.$space-3;
+  align-items: start;
+
+  h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.55;
+  }
+}
+
+.timeline-step__count {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.signal-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: ui.$space-4;
+  margin-top: ui.$space-5;
+}
+
+.signal-card {
+  padding: ui.$space-4;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+
+  p {
+    margin: 0;
+    color: ui.$color-text-secondary;
+    line-height: 1.6;
+  }
+}
+
+.signal-card__value {
+  display: block;
+  margin-bottom: ui.$space-2;
+  color: ui.$color-text-primary;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.signal-card--positive {
+  background: linear-gradient(180deg, #f7fffb 0%, #edfff7 100%);
+}
+
+.signal-card--neutral {
+  background: linear-gradient(180deg, #fafbff 0%, #eef3ff 100%);
+}
+
+.signal-card--info {
+  background: linear-gradient(180deg, #fffaf5 0%, #fff2e6 100%);
+}
+
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: ui.$space-5;
+  margin-top: ui.$space-5;
+}
+
+.workflow-card {
+  display: flex;
+  flex-direction: column;
+  gap: ui.$space-3;
+  padding: ui.$space-5;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.workflow-card--overview {
+  background:
+    radial-gradient(circle at top right, rgba(92, 120, 255, 0.16), transparent 26%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.workflow-card--research {
+  background:
+    radial-gradient(circle at top right, rgba(136, 97, 193, 0.18), transparent 28%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.workflow-card__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 18px;
+  background: rgba(85, 112, 229, 0.1);
+  color: ui.$color-primary-500;
+
+  mat-icon {
+    font-size: 1.6rem;
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+}
+
+.workflow-card__eyebrow {
+  margin-bottom: 0;
+}
+
+.workflow-card h2 {
+  margin: 0;
+  color: ui.$color-text-primary;
+  font-size: 1.8rem;
+  line-height: 1.06;
+  max-width: 16ch;
+}
+
+.workflow-card__description {
+  margin: 0;
+  color: ui.$color-text-secondary;
+  line-height: 1.7;
+}
+
+.workflow-card__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: ui.$space-2;
+
+  li {
+    display: flex;
+    gap: ui.$space-2;
+    align-items: flex-start;
+    color: ui.$color-text-secondary;
+    line-height: 1.55;
+  }
+
+  mat-icon {
+    color: ui.$color-primary-500;
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin-top: 0.15rem;
+  }
+}
+
+.workflow-card__action {
+  margin-top: auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-left: 0;
+  color: ui.$color-primary-500;
+  font-weight: 700;
+}
+
+.insight-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: ui.$space-5;
+  margin-top: ui.$space-5;
+  padding: ui.$space-5;
+  background:
+    radial-gradient(circle at top left, rgba(104, 132, 255, 0.12), transparent 26%),
+    rgba(255, 255, 255, 0.9);
+}
+
+.insight-panel__copy {
+  h2 {
+    margin: 0 0 ui.$space-3;
+    color: ui.$color-text-primary;
+    font-size: clamp(1.9rem, 3vw, 3rem);
+    line-height: 1.02;
+  }
+
+  p:last-child {
+    margin: 0;
+    color: ui.$color-text-secondary;
+    line-height: 1.75;
+  }
+}
+
+.feature-stack {
+  display: flex;
+  flex-direction: column;
+  gap: ui.$space-3;
+}
+
+.feature-note {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: ui.$space-3;
+  padding: ui.$space-3;
+  border-radius: 20px;
+  background: rgba(245, 248, 255, 0.9);
+  border: 1px solid rgba(96, 119, 255, 0.1);
+
+  h3 {
+    margin: 0 0 0.35rem;
+    color: ui.$color-text-primary;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    color: ui.$color-text-secondary;
+    line-height: 1.6;
+  }
+}
+
+.feature-note__icon {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 16px;
+  background: rgba(85, 112, 229, 0.12);
+  color: ui.$color-primary-500;
+}
+
 .section-reveal {
   opacity: 0;
   animation: dashboardLiftIn 0.7s ease forwards;
 }
 
-.card-reveal--1 {
-  animation-delay: 0.1s;
+.section-reveal--1 {
+  animation-delay: 0.08s;
 }
 
-.card-reveal--2 {
-  animation-delay: 0.2s;
+.section-reveal--2 {
+  animation-delay: 0.18s;
 }
 
-.card-reveal--3 {
-  animation-delay: 0.3s;
+.section-reveal--3 {
+  animation-delay: 0.28s;
 }
 
-.section-reveal {
-  animation-delay: 0.35s;
+.section-reveal--4 {
+  animation-delay: 0.34s;
 }
 
-.card-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
+.section-reveal--5 {
+  animation-delay: 0.42s;
 }
 
-mat-card-header,
-mat-card-content {
-  padding: 20px;
-}
-
-mat-card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: ui.$color-text-primary;
-}
-
-.sentiment-card-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.sentiment-text,
-.projected-price {
-  margin-top: 20px;
-}
-
-.sentiment-value,
-.projected-price {
-  font-weight: 600;
-}
-
-.sentiment-value {
-  color: ui.$color-success;
-}
-
-.projected-price {
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-.insights-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-
-    .insight-icon {
-      margin-right: 15px;
-      color: ui.$color-primary-500;
-    }
-  }
-}
-
-.analysis-section {
-  margin-top: 50px;
-  padding: 30px;
-  @include ui.card-surface(15px, 0 4px 20px rgba(0, 0, 0, 0.1));
-
-  h3 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: ui.$color-text-primary;
-    margin-bottom: 20px;
-  }
-
-  p {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: ui.$color-text-secondary;
-  }
+.section-reveal--6 {
+  animation-delay: 0.5s;
 }
 
 @keyframes dashboardFadeIn {
@@ -156,7 +477,7 @@ mat-card-title {
 @keyframes dashboardLiftIn {
   from {
     opacity: 0;
-    transform: translateY(26px);
+    transform: translateY(24px);
   }
 
   to {
@@ -167,9 +488,58 @@ mat-card-title {
 
 @media (prefers-reduced-motion: reduce) {
   .page-entrance,
-  .card-reveal,
   .section-reveal {
     animation: none;
     opacity: 1;
+  }
+}
+
+@include ui.breakpoint-down(1024px) {
+  .dashboard-shell {
+    padding: ui.$space-4;
+  }
+
+  .hero,
+  .workflow-grid,
+  .insight-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .signal-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+@include ui.breakpoint-down(768px) {
+  .hero__copy,
+  .hero__panel,
+  .workflow-card,
+  .insight-panel {
+    padding: ui.$space-4;
+    border-radius: 22px;
+  }
+
+  .hero__copy h1 {
+    font-size: 2.6rem;
+    max-width: none;
+  }
+
+  .hero-panel__visual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-card h2,
+  .insight-panel__copy h2 {
+    max-width: none;
+    font-size: 1.7rem;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero__actions a {
+    justify-content: center;
   }
 }
