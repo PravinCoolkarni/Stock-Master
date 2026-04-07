@@ -1,10 +1,45 @@
 import json
+import random
+import time
+from typing import Callable, TypeVar
 
 import yfinance as yf
 
+T = TypeVar("T")
+
+MAX_RETRIES = 4
+BACKOFF_BASE_SECONDS = 1.5
+
+
+def _retry_yfinance_call(call: Callable[[], T], operation: str) -> T:
+    last_error = None
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            return call()
+        except Exception as exc:
+            last_error = exc
+            message = str(exc).lower()
+            retryable = "429" in message or "too many requests" in message or "rate limit" in message
+
+            if not retryable or attempt == MAX_RETRIES:
+                break
+
+            delay = BACKOFF_BASE_SECONDS * attempt + random.uniform(0, 0.75)
+            print(f"{operation} hit rate limiting on attempt {attempt}. Retrying in {delay:.2f}s")
+            time.sleep(delay)
+
+    if last_error:
+        raise last_error
+
+    raise RuntimeError(f"{operation} failed unexpectedly.")
+
+
 def get_ticker_for_company(company_name):
-    # Search for the company name
-    search = yf.Search(company_name, news_count=0)   
+    search = _retry_yfinance_call(
+        lambda: yf.Search(company_name, news_count=0),
+        f"Ticker search for {company_name}",
+    )
 
     if search.quotes:
         return [
@@ -19,7 +54,11 @@ def get_ticker_for_company(company_name):
 
 
 def get_company_overview(ticker_symbol: str):
-    info = yf.Ticker(ticker_symbol).info or {}
+    ticker = yf.Ticker(ticker_symbol)
+    info = _retry_yfinance_call(
+        lambda: ticker.info or {},
+        f"Overview fetch for {ticker_symbol}",
+    )
     print(
         f"Retrieved info for {ticker_symbol}:\n"
         f"{json.dumps(info, indent=2, default=str)}"
@@ -67,7 +106,11 @@ def get_company_overview(ticker_symbol: str):
 
 def get_stock_data(ticker_symbol: str, output_size: str = "compact"):
     period = "3mo" if output_size == "compact" else "1y"
-    history = yf.Ticker(ticker_symbol).history(period=period, interval="1d")
+    ticker = yf.Ticker(ticker_symbol)
+    history = _retry_yfinance_call(
+        lambda: ticker.history(period=period, interval="1d"),
+        f"Price history fetch for {ticker_symbol}",
+    )
     if history.empty:
         return []
 
@@ -90,5 +133,8 @@ def get_stock_data(ticker_symbol: str, output_size: str = "compact"):
 
 def get_news_for_ticker(ticker_symbol):
     ticker = yf.Ticker(ticker_symbol)
-    news = ticker.news
+    news = _retry_yfinance_call(
+        lambda: ticker.news,
+        f"News fetch for {ticker_symbol}",
+    )
     return news
