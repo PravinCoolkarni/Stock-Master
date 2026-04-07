@@ -4,10 +4,11 @@ import chromadb
 import semchunk
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
 from transformers import AutoTokenizer
+from app.Core.config import settings
 
 MODEL_NAME = "BAAI/bge-small-en-v1.5"
 CHUNK_SIZE = 512
-VECTOR_DB_PATH = "./my_vector_db"
+VECTOR_DB_PATH = settings.VECTOR_DB_PATH 
 COLLECTION_NAME = "text_embeddings"
 
 _tokenizer = None
