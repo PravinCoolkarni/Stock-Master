@@ -1,14 +1,10 @@
 import hashlib
 
-import chromadb
-import semchunk
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-from transformers import AutoTokenizer
 from app.Core.config import settings
 
 MODEL_NAME = "BAAI/bge-small-en-v1.5"
 CHUNK_SIZE = 512
-VECTOR_DB_PATH = settings.VECTOR_DB_PATH 
+VECTOR_DB_PATH = settings.VECTOR_DB_PATH
 COLLECTION_NAME = "text_embeddings"
 
 _tokenizer = None
@@ -16,10 +12,26 @@ _chunker = None
 _collection = None
 
 
+def _require_research_stack():
+    try:
+        import chromadb
+        import semchunk
+        from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+        from transformers import AutoTokenizer
+
+        return chromadb, semchunk, SentenceTransformerEmbeddingFunction, AutoTokenizer
+    except ImportError as exc:
+        raise RuntimeError(
+            "Research embedding dependencies are not installed. "
+            "Install requirements-prod.txt for full research support."
+        ) from exc
+
+
 def _get_chunker():
     global _tokenizer, _chunker
 
     if _chunker is None:
+        _, semchunk, _, AutoTokenizer = _require_research_stack()
         _tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
         _chunker = semchunk.chunkerify(_tokenizer, chunk_size=CHUNK_SIZE)
 
@@ -30,6 +42,7 @@ def _get_collection():
     global _collection
 
     if _collection is None:
+        chromadb, _, SentenceTransformerEmbeddingFunction, _ = _require_research_stack()
         embedding_function = SentenceTransformerEmbeddingFunction(model_name=MODEL_NAME)
         client = chromadb.PersistentClient(path=VECTOR_DB_PATH)
         _collection = client.get_or_create_collection(
