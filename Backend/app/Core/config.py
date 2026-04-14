@@ -5,6 +5,8 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
     # JWT
     SECRET_KEY: str = ""
     ALGORITHM: str = ""
@@ -27,10 +29,8 @@ class Settings(BaseSettings):
 
     # DB
     DATABASE_URL: str = ""
+    VECTOR_DB_PATH: str = ""
 
     FRONTEND_GOOGLE_CALLBACK: str = ""
-
-    class Config:
-        model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 settings = Settings()

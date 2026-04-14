@@ -25,3 +25,12 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+
+## Docker Commands 
+
+To run backend with docker container:
+
+docker build --no-cache -t stock-master-backend .\Backend
+
+docker run --name stock-master-backend -p 8000:8000 --env-file .\Backend\.env stock-master-backend

@@ -41,7 +41,6 @@ Frontend/pnpm-debug.log*
 testem.log
 
 # Python / FastAPI
-Backend/.env
 Backend/.venv/
 Backend/venv/
 Backend/env/
